@@ -20,55 +20,15 @@
     <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
     <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
 
-    <!-- it's stupid to have to load it here, but this is for the +1 button -->
+    <!-- it's stupid to have to load it here, but this is for the +1 button 
     <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
         { "parsetags": "explicit" }
     </script>
+    -->
 
 </head>
 <body>
 
-<!-- Header - START -->
-
-<nav class="navbar navbar-default" role="navigation">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">aeks</a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li ui-sref-active="active">
-                    <a ui-sref="home"><i class="fa fa-home"></i> Home</a>
-                </li>
-                <li ui-sref-active="active">
-                    <a ui-sref="about"><i class="fa fa-info"></i> About</a>
-                </li>
-                <li>
-                    <a href="https://github.com/kvindasAB/angular-enterprise-kickstart/blob/master/README.md"><i class="fa fa-book"></i> Docs</a>
-                </li>
-                <li>
-                    <a href="https://github.com/kvindasAB/angular-enterprise-kickstart/"><i class="fa fa-github"></i> GitHub</a>
-                </li>
-                <li>
-                    <a href="https://github.com/kvindasAB/angular-enterprise-kickstart/issues"><i class="fa fa-comments"></i> Support</a>
-                </li>
-            </ul>
-
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-</nav>
-<div class="page-header">
-    <div class="container">
-      <h1>angular-enterprise-kickstart
-                    <small><a
-                    href="https://github.com/kvindasAB/angular-enterprise-kickstart/blob/master/CHANGELOG.md">v<%= version %></a></small></h1>
-    </div>
-</div>
-
-<!-- Header - END -->
 
 
 
@@ -79,34 +39,6 @@
 <!-- Main Content - END   -->
 
 
-<!-- Footer - START -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-inner">
-            <ul class="social">
-                <li><a target="_blank" href="http://twitter.com/alivebox"><i class="fa fa-twitter-square"></i></a></li>
-                <li><a target="_blank" href="http://linkedin.com/in/alivebox"><i class="fa fa-linkedin-square"></i></a></li>
-                <li><a target="_blank" href="http://github.com/kvindasAB/angular-enterprise-kickstart"><i class="fa fa-github-square"></i></a></li>
-            </ul>
-
-
-            <p>
-                (c) 2014 Powered by <a href="http://www.alivebox.com">Alivebox</a>.
-                <a href="https://github.com/kvindasAB/angular-enterprise-kickstart/fork_select">Fork this</a>
-                to kickstart your next project.
-                <br />
-                angular-enterprise-kickstart is based on
-                <a href="http://joshdmiller.github.io/ng-boilerplate/#/home">ng-boilerplate</a>,
-                <a href="http://www.angularjs.org">AngularJS</a>,
-                <a href="http://www.requirejs.org">RequireJS</a>,
-                <a href="http://getbootstrap.com">Bootstrap</a>,
-                <a href="http://angular-ui.github.com/bootstrap">UI Bootstrap</a>,
-                <a href="http://fortawesome.github.com/Font-Awesome">Font Awesome</a>.
-            </p>
-        </div>
-    </div>
-</footer>
-<!-- Footer - END -->
 
 <% scripts.forEach( function ( file ) { %>
 <script src="vendor/requirejs/require.js" data-main="<%= file %>"></script><% }); %>
