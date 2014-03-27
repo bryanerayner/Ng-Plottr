@@ -25,6 +25,9 @@ exports.config = {
     'browserName': 'chrome'
   },
 
-  rootElement: 'html'
+  rootElement: 'html',
+
+
+
 
 };

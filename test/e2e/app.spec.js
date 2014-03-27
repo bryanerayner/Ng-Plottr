@@ -8,7 +8,8 @@ describe( 'AppE2E', function() {
 
     it('expect index to be home', function() {
         expect(ptor.getCurrentUrl()).toMatch("/home");
-        expect(ptor.getTitle()).toBe("Home | Angular-Enterprise-Kickstart");
+        expect(ptor.getTitle()).toBe("Plottr | Home");
     });
+
 
 });
