@@ -14,6 +14,7 @@ define(['home/index', 'angularMocks'], function(app, ngMock ) {
             expect( true ).toBeTruthy();
         }));
 
+
     });
 
 });
