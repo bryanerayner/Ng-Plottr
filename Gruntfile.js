@@ -50,7 +50,6 @@ module.exports = function ( grunt ) {
         ' * <%= pkg.homepage %>\n' +
         ' *\n' +
         ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
-        ' * Licensed <%= pkg.licenses.type %> <<%= pkg.licenses.url %>>\n' +
         ' */\n'
     },
 
@@ -310,7 +309,25 @@ module.exports = function ( grunt ) {
           out: '<%= compile_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.js',
           wrap: {
               start: '<%= meta.banner %>'
-          }
+          },
+          uglify2: {
+            //Example of a specialized config. If you are fine
+            //with the default options, no need to specify
+            //any of these properties.
+            output: {
+              beautify: true
+            },
+            compress: {
+              sequences: false,
+              global_defs: {
+                  DEBUG: false
+              }
+            },
+            warnings: true,
+            mangle: false,
+            comments:false
+          },
+
         }
       }
     },

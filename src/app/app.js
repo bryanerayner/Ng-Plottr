@@ -5,6 +5,7 @@ define([
     'angularUIUtils',
     'plusOne',
     './home/index',
+    './design/index',
     './about/index'
 ], function (ng) {
     'use strict';
@@ -12,20 +13,27 @@ define([
     var module = ng.module('app', [
         'app.home',
         'app.about',
+        'app.design',
         'ui.router'
     ]);
 
-    module.config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {
-        $urlRouterProvider.otherwise( '/home' );
-    });
+    module.config(
+        [ '$stateProvider', '$urlRouterProvider',
 
-    module.controller( 'AppCtrl', function AppCtrl ( $scope, $location ) {
+        function ( $stateProvider, $urlRouterProvider ) {
+        $urlRouterProvider.otherwise( '/home' );
+    }]);
+
+    module.controller( 'AppCtrl',
+        ['$scope', '$location',
+
+        function ( $scope, $location ) {
         $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
             if ( angular.isDefined( toState.data.pageTitle ) ) {
                 $scope.pageTitle = toState.data.pageTitle + ' | Angular-Enterprise-Kickstart' ;
             }
         });
-    });
+    }]);
 
     return module;
 });
