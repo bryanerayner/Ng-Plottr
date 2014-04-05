@@ -12,19 +12,35 @@ define(['home/index', 'angularMocks'], function(app, ngMock) {
         beforeEach(inject(['$rootScope', '$compile',
             function ($rootScope, $compile) {
                 rootScope = $rootScope;
-                rootScope.layout = {
-                    left:0,
-                    top:0,
-                    width:0,
-                    height:0,
-                    zIndex:0
+                rootScope.node = {
+                    id: 0,
+                    name: 'Welcome Hero',
+                    type: 'h1',
+                    roles: ['hero', 'header'],
+                    layout: {left: 0, top: 20, width: 200, height: 50, zIndex: 0, nestOrder: 0},
+                    innerContent: {
+                        nodes: [
+                            {
+                                type: 'text',
+                                content: 'Welcome, {{name}}'
+                            }
+                        ]
+                    },
+                    inlineStyles: {
+                        fontSize: '1.3em',
+                        color: '#121212'
+                    },
+                    referencedStyles: [],
+                    group: 0
                 };
-                rootScope.nestOrder = 0;
+                rootScope.controller = {
+
+                };
             }]));
 
         function compileDirective(tpl) {
             if (!tpl) {
-                tpl = '<design-node layout="layout" nestOrder = "neestOrder"></design-node>';
+                tpl = '<design-node node="node" controller="controller"></design-node>';
             }
             tpl = '<div>' + tpl + '</div>';
 
@@ -46,81 +62,91 @@ define(['home/index', 'angularMocks'], function(app, ngMock) {
 
             it('should define layout', function () {
                 compileDirective();
-                expect(elm.scope().layout).toBeDefined();
-            });
-            it('should not define layout on $rootScope', function () {
-                compileDirective();
-                expect(rootScope.layout).not.toBeDefined();
-            });
-
-            it('should define nestOrder', function () {
-                compileDirective();
-                expect(elm.scope().nestOrder).toBeDefined();
-            });
-            it('should not define nestOrder on $rootScope', function () {
-                compileDirective();
-                expect(rootScope.nestOrder).not.toBeDefined();
-
+                expect(elm.scope().node.layout).toBeDefined();
             });
 
             describe('layout properties', function () {
-                it('should contain left, width, height, and top', function () {
+                it('should contain left, width, height, top, zIndex, and nestOrder', function () {
                     compileDirective();
                     var elmScope = elm.scope();
-                    var layout = elmScope.layout;
+                    var layout = elmScope.node.layout;
                     expect(layout.left).toBeDefined();
                     expect(layout.width).toBeDefined();
                     expect(layout.height).toBeDefined();
                     expect(layout.top).toBeDefined();
-                });
-                it('should contain zIndex', function () {
-                    compileDirective();
-                    var elmScope = elm.scope();
-                    var layout = elmScope.layout;
                     expect(layout.zIndex).toBeDefined();
+                    expect(layout.nestOrder).toBeDefined();
                 });
-                it('should receive a camel cased or hyphenated initialziation as an attribute', function () {
-                    compileDirective('<design-node initial-layout="zIndex:50;"></design-node>');
-                    var elmScope = elm.scope();
-                    var layout = elmScope.layout;
-                    expect(layout.zIndex).toEqual(50);
-
-                    compileDirective('<design-node initial-layout="z-index:50;"></design-node>');
-                    elmScope = elm.scope();
-                    layout = elmScope.layout;
-                    expect(layout.zIndex).toEqual(50);
-                });
-                it('should take a hash of values', function () {
-                    compileDirective('<design-node initial-layout="left:0px;top:0px;width:100%;height:100%;z-index:5;"></design-node>');
-                    var elmScope = elm.scope();
-                    var layout = elmScope.layout;
-                    expect(layout.left).toEqual('0px');
-                    expect(layout.top).toEqual('0px');
-                    expect(layout.width).toEqual('100%');
-                    expect(layout.height).toEqual('100%');
-                    expect(layout.zIndex).toEqual(5);
-                });
-            });
-            describe('nestOrder properties', function () {
-                it('should be defaulted to 0', function () {
+                it('should set these values to defaults if they are not defined', function () {
+                    rootScope.node.layout = 'somethingWrong';
+                    expect(rootScope.node.layout).toEqual('somethingWrong');
                     compileDirective();
                     var elmScope = elm.scope();
-                    var nestOrder = elmScope.nestOrder;
-                    expect(nestOrder).toEqual(0);
+                    var layout = elmScope.node.layout;
+                    expect(layout.left).toEqual(0);
+                    expect(layout.width).toEqual(50);
+                    expect(layout.height).toEqual(50);
+                    expect(layout.top).toEqual(50);
+                    expect(layout.zIndex).toEqual(0);
+                    expect(layout.nestOrder).toEqual(0);
+
                 });
-                it('should receive a camel cased or hyphenated initialization as an attribute', function () {
-                    compileDirective('<design-node initial-nestOrder = "5"></design-node>');
+                it('should bubble changes from layout to the rootScope', function () {
+                    compileDirective();
                     var elmScope = elm.scope();
-                    var nestOrder = elmScope.nestOrder;
-                    expect(nestOrder).toEqual(5);
-                    compileDirective('<design-node initial-nest-Order = "5"></design-node>');
-                    elmScope = elm.scope();
-                    nestOrder = elmScope.nestOrder;
-                    expect(nestOrder).toEqual(5);
-                    compileDirective('<design-node initial-nest-order = "5"></design-node>');
-                    elmScope = elm.scope();
-                    nestOrder = elmScope.nestOrder;
-                    expect(nestOrder).toEqual(5);
+                    var layout = elmScope.node.layout;
+                    layout.left = 5000;
+                    elmScope.$apply();
+                    expect(rootScope.node.layout.left).toEqual(5000);
+
+                    layout.top = 1000;
+                    elmScope.$apply();
+                    expect(rootScope.node.layout.top).toEqual(1000);
+
+                    layout.width = 60;
+                    elmScope.$apply();
+                    expect(rootScope.node.layout.width).toEqual(60);
+
+                    layout.height = 500;
+                    elmScope.$apply();
+                    expect(rootScope.node.layout.height).toEqual(500);
+
+                    layout.zIndex = 5;
+                    elmScope.$apply();
+                    expect(rootScope.node.layout.zIndex).toEqual(5);
+
+                    layout.nestOrder = 2;
+                    elmScope.$apply();
+                    expect(rootScope.node.layout.nestOrder).toEqual(2);
+                });
+
+                it('should bubble changes from rootScope to layout', function () {
+                    compileDirective();
+                    var elmScope = elm.scope();
+                    var layout = elmScope.node.layout;
+                    rootScope.node.layout.left = 5000;
+                    rootScope.$apply();
+                    expect(layout.left).toEqual(5000);
+
+                    rootScope.node.layout.top = 1000;
+                    rootScope.$apply();
+                    expect(layout.top).toEqual(1000);
+
+                    rootScope.node.layout.width = 60;
+                    rootScope.$apply();
+                    expect(layout.width).toEqual(60);
+
+                    rootScope.node.layout.height = 500;
+                    rootScope.$apply();
+                    expect(layout.height).toEqual(500);
+
+                    rootScope.node.layout.zIndex = 5;
+                    rootScope.$apply();
+                    expect(layout.zIndex).toEqual(5);
+
+                    rootScope.node.layout.nestOrder = 2;
+                    rootScope.$apply();
+                    expect(layout.nestOrder).toEqual(2);
                 });
             });
 

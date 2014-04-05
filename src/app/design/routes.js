@@ -3,7 +3,7 @@ define(['angular', './module', './controllers/index'], function(ng, module, cont
 
 	module.config([ '$stateProvider', function ($stateProvider){
 		$stateProvider.state('design', {
-			url: '/design',
+			url: '/designs/:designId',
 			views:{
 				'main':{
 					controller:'DesignCtrl',

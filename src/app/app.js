@@ -2,6 +2,7 @@ define([
     'angular',
     'angularBootstrap',
     'angularUIRouter',
+    'restangular',
     'angularUIUtils',
     'plusOne',
     './home/index',
@@ -14,15 +15,19 @@ define([
         'app.home',
         'app.about',
         'app.design',
+        'restangular',
         'ui.router'
     ]);
 
     module.config(
-        [ '$stateProvider', '$urlRouterProvider',
+        [ '$stateProvider', '$urlRouterProvider', 'RestangularProvider',
 
-        function ( $stateProvider, $urlRouterProvider ) {
+        function ( $stateProvider, $urlRouterProvider , RestangularProvider) {
         $urlRouterProvider.otherwise( '/home' );
-    }]);
+            RestangularProvider.setBaseUrl('/api/v1');
+            RestangularProvider.setRequestSuffix('.json');
+
+        }]);
 
     module.controller( 'AppCtrl',
         ['$scope', '$location',

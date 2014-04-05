@@ -6,6 +6,7 @@ define(['angular'], function(ng){
 		'app.design.partials',
 		'app.design.controllers',
 		'app.design.services',
-		'ui.router'
+		'ui.router',
+            'restangular'
 		]);
 });
