@@ -9,8 +9,11 @@ define(['home/index', 'angularMocks'], function(app, ngMock) {
 
         beforeEach(module('app.design.directives.designNode'));
 
-        beforeEach(inject(['$rootScope', '$compile',
-            function ($rootScope, $compile) {
+        beforeEach(inject(['$rootScope', '$compile', '$httpBackend',
+            function ($rootScope, $compile, $httpBackend) {
+                $httpBackend.whenGET('./src/app/design/directives/design-node.tpl.html').respond(
+                    '{{calculated.innerContent()}}'
+                );
                 rootScope = $rootScope;
                 rootScope.node = {
                     id: 0,
@@ -151,6 +154,11 @@ define(['home/index', 'angularMocks'], function(app, ngMock) {
             });
 
 
+        });
+
+        describe('layout style mapping', function(){
+//            it('should map left and top in pixels', function(){
+//            });
         });
     });
 });

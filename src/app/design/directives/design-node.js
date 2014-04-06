@@ -23,9 +23,22 @@ define(['angular'], function (ng) {
             },
             templateUrl: './src/app/design/directives/design-node.tpl.html',
             scope:{
-                layout:"=layout"
+                plot:'=plot',
+                node:"=node",
+                eventListener:'&eventListener'
             },
             link:function($scope, $elem, $attrs){
+
+
+
+                if (!$scope.node || $scope.node.id)
+                {
+                    //Todo: make this tear down if the node doesn't have an id.
+                }
+
+                var eventClass = '.designNode_' + $scope.node.id + '_event';
+
+                //Set layout defaults
                 var layoutDefaults = {
                     left:0,
                     top:0,
@@ -34,19 +47,59 @@ define(['angular'], function (ng) {
                     zIndex:0,
                     nestOrder:0
                 };
+                if (!$scope.node) { $scope.node = {};}
+                if (!$scope.node.layout ) {$scope.node.layout = {};}
+
 
                 ng.forEach(layoutDefaults, function(val, key)
                 {
                     if (!this[key]){
                         this[key] = val;
                     }
-                }, $scope.layout);
+                }, $scope.node.layout);
 
-                var unitDefaults = {
+
+
+                //Register event listeners on $elem
+
+                var delegatedEvents = {
+                    'click':'click',
+                    'mouseEnter':'mouseEnter',
+                    'mouseLeave':'mouseLeave'
+                };
+
+
+
+                if ($scope.eventListener)
+                {
+
+                    var sendEventFactory = function(evName){
+                        return function(event){
+                            $scope.eventListener(evName, $scope.node, event);
+                        }
+                    };
+
+                    var eventName;
+                    for (eventName in delegatedEvents)
+                    {
+                        $elem.on(eventName+eventClass, sendEventFactory(delegatedEvents[eventName]));
+                    }
+
+                    $scope.$on("$destroy", function() {
+                        $elem.off(eventClass);
+                    });
+                }
+
+
+
+
+                // Todo: calculate width and height as percentages of parent width and height, not as pixel values.
+                // Todo: Store width as pixel based, but have the end calculation for display go in pixels.
+                var layoutUnits = {
                     left:"px",
                     top:"px",
-                    width:"%",
-                    height:"%",
+                    width:"px",
+                    height:"px",
                     zIndex:""
                 };
 
@@ -56,14 +109,14 @@ define(['angular'], function (ng) {
                         backgroundColor:'#fafafa',
                         position:'absolute'
                     };
-                    ng.forEach($scope.layout, function(val, key){
-                        var stringVal = ''+val+unitDefaults[key];
+                    ng.forEach($scope.node.layout, function(val, key){
+                        var stringVal = ''+val+layoutUnits[key];
                         styleRules[key] = stringVal;
                     });
                     $elem.css(styleRules);
                 }
 
-                $scope.$watch('layout', updateStyle, true);
+                $scope.$watch('node.layout', updateStyle, true);
 
                 //Finally execute the style updating functions at least once.
                 updateStyle();

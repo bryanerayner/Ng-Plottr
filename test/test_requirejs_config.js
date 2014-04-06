@@ -24,7 +24,7 @@ require.config({
     angularUIUtils: '../../vendor/angular-ui-utils/ui-utils.min',
     angularMoment: '../../vendor/angular-moment/angular-moment.min',
     angularMocks: '../../vendor/angular-mocks/angular-mocks',
-    restangular: '../../vendor/restangular/dist/restangular',
+    restangular: '../../vendor/restangular/dist/restangular.min',
     domReady: '../../vendor/requirejs-domready/domReady',
     text: '../../vendor/requirejs-text/text',
     lodash: '../../vendor/lodash/dist/lodash.min',

@@ -7,10 +7,16 @@ define(['angular', './module', 'restangular'], function (ng, module, restangular
         service.basePlots = Restangular.all('plots');
 
         service.one = function(param, callbackPass, callbackFail){
-            var noop = function(){};
+            var noop;
+            noop = function (arg) {
+                return arg;
+            };
             var pass = callbackPass || noop;
             var fail = callbackFail || noop;
-            Restangular.one('plots', param).then(function(result){pass(result);}, function(result){fail(result);});
+            Restangular.one('plots', param).get().then(
+                function(response){return pass(response);},
+                function(response){return fail(response);}
+            );
         };
 
         return service;

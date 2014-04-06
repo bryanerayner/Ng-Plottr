@@ -1,9 +1,10 @@
 <div ng-controller="DesignCtrl">
-Yo, dis be design
 
+    <section class = "currentContext design" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative;">
 
-<div ng-repeat = "node in designNodes">
-    <design-node layout = "node.layout" ></design-node>
-</div>
+        <div ng-repeat = "node in currentContext.designNodes">
+            <design-node plot="currentContext.plot" node = "node" eventListener="ui.eventListener"></design-node>
+        </div>
+    </section>
 
 </div>
