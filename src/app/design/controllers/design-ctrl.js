@@ -4,7 +4,7 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
     /**
      * And of course we define a controller for our route.
      */
-    module.controller( 'DesignCtrl', ['$scope', '$stateParams', 'DesignRestService', 'Restangular', function ( $scope , $stateParams, DesignRestService, Restangular) {
+    module.controller( 'DesignCtrl', ['$scope', '$stateParams', 'DesignRestService', 'Restangular', 'KeystateService', function ( $scope , $stateParams, DesignRestService, Restangular, KeystateService) {
 
         var currentDesign = $stateParams.designId;
 
@@ -21,7 +21,7 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
         };
         $scope.ui = {};
 
-        $scope.ui.availableTools = ['edit'];
+        $scope.ui.availableTools = [];
 
         var loadPlotMode = $scope.io.loadPlotMode = function(plotModeId)
         {
@@ -82,18 +82,33 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
         };
 
 
-        var events = $scope.ui.events = {
-            eventVent:function(evName, node, event){
-                var toolEventList = $scope.ui.events.toolEvents[$scope.ui.selectedTool];
+        var ui_events = $scope.ui.events = {
+            triggerUIEvent:function(evName,  event, node){
+                var toolEvents = $scope.ui.events.toolEvents;
+                var toolEventList = [];
+                var eventNameList;
 
-                if (toolEventList){
-                    var eventNameList = toolEventList[evName];
-                    _.each(eventNameList, function(eventName){
-                        if (_.isFunction(eventNameList[eventName])){
-                            eventNameList[eventName].call($scope, evName, node, event);
-                        }
-                    });
+                var eventAttemptLists = [];
+                eventAttemptLists.push(toolEvents[$scope.ui.selectedTool]);
+                eventAttemptLists.push(toolEvents['*']);
 
+                for (var i = 0, ii = eventAttemptLists.length; i < ii; i++){
+                    if (!eventAttemptLists[i]){
+                        continue;
+                    }
+                    eventNameList = eventAttemptLists[i][evName];
+                    if (_.isArray(eventNameList) && eventNameList.length > 0)
+                    {
+                        break;
+                    }
+                }
+
+                if (eventNameList){
+                    _.each(eventNameList, function(eventCallback){
+                        if (_.isFunction(eventCallback)){
+                            eventCallback.call($scope, evName, event, node);
+                            }
+                        });
                 }
             },
 
@@ -118,29 +133,32 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
                 //Add the event to the callback list
                 toolEvents[evName].push(callback);
             },
+            // Remove a UIEvent from the event listeners
             removeUIEvent:function(tool, evName, callback){
                 var events = $scope.ui.events;
-                if (tool && events.toolEvents[tool]){
-                    var toolEventsEvName =events.toolEvents[tool][evName];
-                    if (evName && toolEventsEvName){
-                        if (_.isFunction(callback)){
-                            var deletionList= [];
-                            for (var i = 0; i < toolEventsEvName.length; i++)
-                            {
-                                if (_.isEqual(callback, toolEventsEvName[i])){
 
-                                }
+                // Flags for what is deleted
+                var deleteTool = true;
+                var deleteEvName = true;
+
+
+                if (tool && events.toolEvents[tool]){
+                    if (evName && events.toolEvents[tool][evName]){
+                        deleteTool = false;
+                        var toolEventsEvName = events.toolEvents[tool][evName];
+                        if (toolEventsEvName) {
+                            if (_.isFunction(callback)) {
+                                deleteEvName = false;
+
+                                $scope.ui.events.toolEvents[tool][evName] = _.filter(toolEventsEvName, function(eventCallback){
+                                    return (_.isEqual(callback, eventCallback)) ? false : true;
+                                });
                             }
                         }
-                    }else
-                    {
-                        delete events.toolEvents[tool];
                     }
                 }
             }
         };
-
-
 
 
         //Actually grab the data for the current design.
@@ -151,6 +169,52 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
             console.log('error loading the current design model');
         });
 
+
+
+        // Add the universal events (selection, etc)
+
+        var ui_selection = $scope.ui.selection = {
+            events:{
+                selectNode:function(evName, event, node){
+
+                    var action = '';
+                    if (KeystateService.keyIsDown('mod') || KeystateService.keyIsDown('shift'))
+                    {
+                        action = 'toggleSelection';
+                    }
+                    else
+                    {
+                        action = 'forceSelection';
+                    }
+
+                    $scope.ui.selection[action](node);
+                    console.log($scope.ui.selection.selectedNodes);
+                }
+            },
+            selectedNodes:[],
+
+            toggleSelection:function(node)
+            {
+                var nodeID = node.id;
+                if (_.isNumber(nodeID)) {
+                    if (_.contains(ui_selection.selectedNodes, nodeID)) {
+                        ui_selection.selectedNodes = _.without(ui_selection.selectedNodes, nodeID);
+                    }else{
+                        ui_selection.selectedNodes.push(nodeID);
+                    }
+                }
+
+            },
+
+            forceSelection:function(nodes){
+                var newSelectedNodes;
+                newSelectedNodes = _.isArray(nodes) ? nodes : [nodes];
+
+                $scope.ui.selection.selectedNodes = _.pluck(newSelectedNodes, 'id');
+            }
+        };
+
+        ui_events.registerUIEvent('*','click', ui_selection.events.selectNode);
 
     }]);
 

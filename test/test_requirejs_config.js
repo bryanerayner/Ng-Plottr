@@ -31,7 +31,9 @@ require.config({
     moment: '../../vendor/moment/min/moment.min',
     placeholders: '../../vendor/placeholders/angular-placeholders-0.0.1-SNAPSHOT.min',
     plusOne: '../common/plusOne/plusOne',
-    angularTemplateCache: '../common/angular-templatecache/angular-templatecache'
+    angularTemplateCache: '../common/angular-templatecache/angular-templatecache',
+    keystateService:'../common/keystate-service/keystate-srv',
+      mousetrap:'../common/mousetrap/mousetrap'
   },
   shim: {
     'angular': { exports: 'angular' },
@@ -47,7 +49,8 @@ require.config({
       ]
     },
     'placeholders': { deps: ['angular'] },
-    'plusOne': { deps: ['angular'] }
+    'plusOne': { deps: ['angular'] },
+    'keystateService': {deps: ['angular', 'mousetrap'] }
   },
   // ask Require.js to load these files (all our tests)
   deps: tests,

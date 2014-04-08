@@ -3,8 +3,11 @@
     <section class = "currentContext design" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative;">
 
         <div ng-repeat = "node in currentContext.designNodes">
-            <design-node plot="currentContext.plot" node = "node" eventListener="ui.eventListener"></design-node>
+            <design-node plot="currentContext.plot" node = "node" event-listener="ui.events.triggerUIEvent(eventName, event, node)"></design-node>
         </div>
     </section>
+
+
+    <p>Selected Nodes: {{ui.selection.selectedNodes | json}}</p>
 
 </div>

@@ -6,7 +6,7 @@ define(['design/index', 'angularMocks', 'lodash'], function (app, ngMock, _) {
 
     describe('Controller: DesignCtrl', function () {
         var createController, createDefaultController;
-        var controllerFactory, $scope, mockApi, uiState, $stateParams, DesignRestService;
+        var controllerFactory, $scope, mockApi, uiState, $stateParams, DesignRestService, KeystateService;
 
         var testMockSettings = {};
         testMockSettings.DesignRestService = {
@@ -34,7 +34,8 @@ define(['design/index', 'angularMocks', 'lodash'], function (app, ngMock, _) {
             return controllerFactory('DesignCtrl', {
                 $scope: $scope,
                 $stateParams: $stateParams,
-                DesignRestService:DesignRestService
+                DesignRestService:DesignRestService,
+                keystateService:KeystateService
             });
         };
 
@@ -215,12 +216,12 @@ define(['design/index', 'angularMocks', 'lodash'], function (app, ngMock, _) {
 
 
         // inject is used for resolving references that you need to use in your tests, don't use this as a normal beforeEach, this beforeEach is used to resolve references
-        beforeEach(inject(function (_$controller_, _$rootScope_, _$stateParams_) {
+        beforeEach(inject(function (_$controller_, _$rootScope_, _$stateParams_, _KeystateService_) {
 
 
             $stateParams = _$stateParams_;
 
-
+            KeystateService = _KeystateService_;
 
             $scope = _$rootScope_.$new();
 
@@ -258,7 +259,7 @@ define(['design/index', 'angularMocks', 'lodash'], function (app, ngMock, _) {
             });
             it('should begin with nothing selected and the edit tool enabled', function(){
                createDefaultController();
-                expect($scope.ui.selectedNodes).toEqual([]);
+                expect($scope.ui.selection.selectedNodes).toEqual([]);
                 expect($scope.ui.selectedTool).toEqual('edit');
             });
             //it('should define a function ')
@@ -275,11 +276,11 @@ define(['design/index', 'angularMocks', 'lodash'], function (app, ngMock, _) {
                 $scope.ui.selectTool('edit');
                 //First click - select
                 $scope.ui.event.click($scope.currentContext.designNodes[0], '');
-                expect($scope.ui.selectedNodes).toEqual([0]);
+                expect($scope.ui.selection.selectedNodes).toEqual([0]);
 
                 //Second click - deselect
                 $scope.ui.event.click($scope.currentContext.designNodes[0], '');
-                expect($scope.ui.selectedNodes).toEqual([]);
+                expect($scope.ui.selection.selectedNodes).toEqual([]);
             });
         });
 

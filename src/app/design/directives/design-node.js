@@ -75,18 +75,22 @@ define(['angular'], function (ng) {
 
                     var sendEventFactory = function(evName){
                         return function(event){
-                            $scope.eventListener(evName, $scope.node, event);
-                        }
+                            $scope.eventListener({
+                                eventName:evName,
+                                event:event,
+                                node:$scope.node
+                            });
+                        };
                     };
 
                     var eventName;
                     for (eventName in delegatedEvents)
                     {
-                        $elem.on(eventName+eventClass, sendEventFactory(delegatedEvents[eventName]));
+                        $elem.on(eventName, sendEventFactory(delegatedEvents[eventName]));
                     }
 
                     $scope.$on("$destroy", function() {
-                        $elem.off(eventClass);
+                        $elem.off();
                     });
                 }
 

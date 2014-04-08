@@ -23,7 +23,9 @@ require.config({
         moment: '../../vendor/moment/min/moment.min',
         placeholders: '../../vendor/placeholders/angular-placeholders-0.0.1-SNAPSHOT.min',
         plusOne: '../common/plusOne/plusOne',
-        angularTemplateCache: '../common/angular-templatecache/angular-templatecache'
+        angularTemplateCache: '../common/angular-templatecache/angular-templatecache',
+        keystateService:'../common/keystate-service/keystate-srv',
+        mousetrap:'../common/mousetrap/mousetrap'
 
     },
     shim: {
@@ -50,6 +52,9 @@ require.config({
         },
         "plusOne": {
             deps: ["angular"]
+        },
+        "keystateService":{
+            deps: ["angular", "mousetrap"]
         }
     },
 
@@ -58,7 +63,7 @@ require.config({
 	],
 
     // kick start application
-    deps: ["./bootstrap"],
+    deps: ["./bootstrap"]
 
 
 
