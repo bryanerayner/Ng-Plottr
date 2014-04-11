@@ -1,4 +1,4 @@
-<div ng-controller="DesignCtrl">
+<div>
 
     <section class = "currentContext design" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative;">
 
@@ -8,6 +8,8 @@
     </section>
 
 
-    <p>Selected Nodes: {{ui.selection.selectedNodes | json}}</p>
+    <ul ng-repeat = "selection in ui.selection.selectedNodes">
+        <li>{{selection}}</li>
+    </ul>
 
 </div>

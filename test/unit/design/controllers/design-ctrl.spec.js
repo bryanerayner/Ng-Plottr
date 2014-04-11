@@ -6,7 +6,7 @@ define(['design/index', 'angularMocks', 'lodash'], function (app, ngMock, _) {
 
     describe('Controller: DesignCtrl', function () {
         var createController, createDefaultController;
-        var controllerFactory, $scope, mockApi, uiState, $stateParams, DesignRestService, KeystateService;
+        var controllerFactory, $scope, mockApi, uiState, $stateParams, DesignRestService, KeystateService, $document;
 
         var testMockSettings = {};
         testMockSettings.DesignRestService = {
@@ -35,7 +35,8 @@ define(['design/index', 'angularMocks', 'lodash'], function (app, ngMock, _) {
                 $scope: $scope,
                 $stateParams: $stateParams,
                 DesignRestService:DesignRestService,
-                keystateService:KeystateService
+                keystateService:KeystateService,
+                $document: $document
             });
         };
 
@@ -216,10 +217,12 @@ define(['design/index', 'angularMocks', 'lodash'], function (app, ngMock, _) {
 
 
         // inject is used for resolving references that you need to use in your tests, don't use this as a normal beforeEach, this beforeEach is used to resolve references
-        beforeEach(inject(function (_$controller_, _$rootScope_, _$stateParams_, _KeystateService_) {
+        beforeEach(inject(function (_$controller_, _$rootScope_, _$stateParams_, _KeystateService_, _$document_) {
 
 
             $stateParams = _$stateParams_;
+
+            $document = _$document_;
 
             KeystateService = _KeystateService_;
 

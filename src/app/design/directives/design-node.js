@@ -64,8 +64,10 @@ define(['angular'], function (ng) {
 
                 var delegatedEvents = {
                     'click':'click',
-                    'mouseEnter':'mouseEnter',
-                    'mouseLeave':'mouseLeave'
+                    'mousedown':'mousedown',
+                    'mouseup':'mouseup',
+                    'mouseenter':'mouseenter',
+                    'mouseleave':'mouseleave'
                 };
 
 

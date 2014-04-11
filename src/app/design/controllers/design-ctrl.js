@@ -4,7 +4,7 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
     /**
      * And of course we define a controller for our route.
      */
-    module.controller( 'DesignCtrl', ['$scope', '$stateParams', 'DesignRestService', 'Restangular', 'KeystateService', function ( $scope , $stateParams, DesignRestService, Restangular, KeystateService) {
+    module.controller( 'DesignCtrl', ['$scope', '$stateParams', 'DesignRestService', 'Restangular', 'KeystateService', '$document', function ( $scope , $stateParams, DesignRestService, Restangular, KeystateService, $document) {
 
         var currentDesign = $stateParams.designId;
 
@@ -110,11 +110,21 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
                             }
                         });
                 }
+                $scope.$apply();
             },
 
             toolEvents:{},
 
             registerUIEvent:function(tool, evName, callback){
+                var evNames = evName.split(/[\s]+/gi);
+                if (evNames.length > 1){
+                    var scope = $scope;
+                    _.each(evNames, function(iter){
+                        scope.ui.events.registerUIEvent(tool, iter, callback);
+                    });
+                    return;
+                }
+
                 var events = $scope.ui.events;
                 // See if an event hash is already there for that tool
                 if (!events.toolEvents[tool])
@@ -187,11 +197,16 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
                         action = 'forceSelection';
                     }
 
+
                     $scope.ui.selection[action](node);
-                    console.log($scope.ui.selection.selectedNodes);
                 }
             },
             selectedNodes:[],
+
+            addSelection:function(node){
+                ui_selection.selectedNodes.push(node.id);
+                ui_selection.selectedNodes = _.unique(ui_selection.selectedNodes);
+            },
 
             toggleSelection:function(node)
             {
@@ -214,7 +229,83 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
             }
         };
 
-        ui_events.registerUIEvent('*','click', ui_selection.events.selectNode);
+        var ui_edit = $scope.ui.edit = {
+            events:{
+                startMove:function(evName, event, node){
+                    if (_.contains($scope.ui.selection.selectedNodes, node.id)){
+                        $scope.ui.edit._states.startPosition = {
+                            left:event.pageX,
+                            top:event.pageY
+                        };
+                        $scope.ui.edit._states.moving = true;
+                    }
+                },
+                stopMove:function(evName, event, node){
+                    $scope.ui.edit._states.moving = false;
+                }
+            },
+            _states:{
+                moving:false,
+                startPosition:{}
+            },
+            move:function(event) {
+                if (!$scope.ui.edit._states.moving) {
+                    return;
+                }
+                var startPosition = $scope.ui.edit._states.startPosition;
+                var delta = {
+                    left: startPosition.left || 0,
+                    top: startPosition.top || 0
+                };
+                delta.left = event.pageX - delta.left;
+                delta.top = event.pageY - delta.top;
+
+                $scope.ui.edit.moveSelectedNodes(delta);
+
+                $scope.ui.edit._states.startPosition = {
+                    left:event.pageX,
+                    top:event.pageY
+                };
+            },
+            registerMoveListener:function(){
+                $document.on('mousemove', $scope.ui.edit.move);
+            },
+            unregisterMoveListener:function(){
+                $document.unbind('mousemove', $scope.ui.edit.move);
+            },
+            moveSelectedNodes:function(delta){
+                var selectedNodeIDs = $scope.ui.selection.selectedNodes;
+
+                var dLeft = delta.left || 0;
+                var dTop = delta.top || 0;
+
+                _.each($scope.currentContext.designNodes, function(node){
+                    if (_.contains(selectedNodeIDs, node.id)){
+                        node.layout.left += dLeft;
+                        node.layout.top += dTop;
+                    }
+                });
+                $scope.$apply();
+            },
+
+            _setup:function(){
+                $scope.ui.edit.registerMoveListener();
+            },
+            _teardown:function(){
+                $scope.ui.edit.unregisterMoveListener();
+            }
+        };
+
+
+
+        ui_events.registerUIEvent('*','click mousedown', ui_selection.events.selectNode);
+
+        ui_events.registerUIEvent('edit','mousedown', ui_edit.events.startMove);
+        ui_events.registerUIEvent('edit','mouseup mouseout', ui_edit.events.stopMove);
+
+        selectTool('edit');
+
+        $scope.ui.edit._setup();
 
     }]);
 
