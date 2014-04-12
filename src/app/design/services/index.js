@@ -1,4 +1,5 @@
 define([
     'keystateService',
-    './design-srv'
+    './design-srv',
+    './ui-events-srv'
 ], function () {});

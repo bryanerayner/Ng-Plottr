@@ -20,7 +20,7 @@ module.exports = function ( grunt ) {
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-ng-annotate');
   grunt.loadNpmTasks('grunt-protractor-runner');
-
+  grunt.loadNpmTasks('grunt-ngdocs');
 
   /**
    * Load in our build configuration file.
@@ -586,7 +586,11 @@ module.exports = function ( grunt ) {
           livereload: false
         }
       }
-    }
+    },
+
+      ngdocs:{
+          all:['src/**/*.js']
+      }
   };
 
   grunt.initConfig( grunt.util._.extend( taskConfig, userConfig ) );
@@ -630,6 +634,11 @@ module.exports = function ( grunt ) {
 
   grunt.registerTask( 'test:e2e', [
     'build', 'testconfig:e2e', 'connect:testserver', 'protractor:e2e'
+  ]);
+
+
+  grunt.registerTask('doc', [
+      'ngdocs:all'
   ]);
 
   /**

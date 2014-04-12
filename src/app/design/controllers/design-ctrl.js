@@ -4,7 +4,7 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
     /**
      * And of course we define a controller for our route.
      */
-    module.controller( 'DesignCtrl', ['$scope', '$stateParams', 'DesignRestService', 'Restangular', 'KeystateService', '$document', function ( $scope , $stateParams, DesignRestService, Restangular, KeystateService, $document) {
+    module.controller( 'DesignCtrl', ['$scope', '$stateParams', 'DesignRestService', 'Restangular', '$document', 'DesignTools', function ( $scope , $stateParams, DesignRestService, Restangular, $document, DesignTools) {
 
         var currentDesign = $stateParams.designId;
 

@@ -1,0 +1,3 @@
+define([
+    './tools'
+], function () {});

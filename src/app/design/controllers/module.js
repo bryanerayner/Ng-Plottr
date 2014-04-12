@@ -1,7 +1,7 @@
-define(['angular', 'keystateService'], function (ng, keystateService) {
+define(['angular', 'keystateService', './tools/index.js'], function (ng, keystateService) {
     'use strict';
     return ng.module('app.design.controllers',
         [
-            'keystateService'
+            'app.design.controllers.tools'
         ]);
 });

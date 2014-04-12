@@ -1,7 +1,7 @@
 /**
  * Created by bryanerayner on 2014-04-08.
  */
-define(['angular', 'mousetrap'], function (ng, mousetrap) {
+define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
     'use strict';
 
     var module = ng.module('keystateService',
@@ -10,6 +10,57 @@ define(['angular', 'mousetrap'], function (ng, mousetrap) {
         ]);
 
     module.factory("KeystateService", function(){
+
+        var factory = {};
+
+        var eventsList = ['keydown','keyup','keypress'];
+
+        var KeystateListener = factory.KeystateListener = function(){
+
+            this._pressedKeys = {};
+            this._configure();
+            this.$scope = null;
+        };
+
+        _.extend(KeystateListener.prototype, {
+            registerScope:function($scope){
+                this.$scope = $scope;
+            },
+            releaseScope:function($scope){
+                delete this.$scope;
+            },
+            _configure:function(){
+                var docEl = ng.element(document);
+                _.each(eventsList, function(eventName){
+                    var boundEventCallback = _.bind(this[eventName], this);
+                    docEl.on(eventName, boundEventCallback);
+                }, this);
+            },
+            keydown:function(event){
+
+            },
+            keyup:function(event){
+
+            },
+            keypress:function(event){
+
+            }
+        });
+
+        var passthroughList = ['$emit', '$broadcast'];
+        _.each(passthroughList, function(funcName){
+            KeystateListener.prototype[funcName] = function()
+            {
+                var args = Array.prototype.slice.call(arguments, 0);
+                if (this.$scope){
+                    this.$scope[funcName]apply(this.$scope, args);
+                }
+            }
+        });
+
+
+
+
 
         var eventsBound = false;
 
@@ -123,12 +174,12 @@ define(['angular', 'mousetrap'], function (ng, mousetrap) {
             return !keyIsDown(key);
         }
 
-        var factory = {
+        _.extend(factory, {
             releaseEvents:releaseEvents,
             bindEvents:bindEvents,
             keyIsDown:keyIsDown,
             keyIsUp:keyIsUp
-        };
+        });
 
         bindEvents();
 
