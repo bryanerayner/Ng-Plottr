@@ -25,7 +25,8 @@ require.config({
         plusOne: '../common/plusOne/plusOne',
         angularTemplateCache: '../common/angular-templatecache/angular-templatecache',
         keystateService:'../common/keystate-service/keystate-srv',
-        mousetrap:'../common/mousetrap/mousetrap'
+        mousetrap:'../common/mousetrap/mousetrap',
+        jrClass:'../common/jrClass/jrClass'
 
     },
     shim: {

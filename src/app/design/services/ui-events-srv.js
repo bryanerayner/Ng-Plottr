@@ -1,4 +1,4 @@
-define(['angular', './module', 'lodash'], function (ng, module, _) {
+define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Class) {
     'use strict';
 
     /**
@@ -18,17 +18,32 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
         var spaceRegex = /[\s]+/gi;
 
 
-        var EventMap = service.EventMap = function(name, events)
-        {
-            this.name = name;
-            // Set up the events hash
-            this._eventsHash = {};
-            this._setUpEventsHash(events);
 
-            this._eventsObject = null;
-        };
+        var EventMap = service.EventMap = Class.extend({
+            init:function(name, events, ctx)
+            {
+                this.name = name;
+                // Set up the events hash
+                this._eventsHash = {};
+                this._setUpEventsHash(events);
 
-        _.extend(EventMap.prototype, {
+                this._eventsObject = null;
+
+                if (ctx){
+                    this.ctx = ctx;
+                }
+            },
+
+            addToHash:function(eventHash){
+
+            },
+            removeFromHash:function(eventHash){
+
+            },
+
+            setContext:function(ctx){
+                this.ctx = ctx;
+            },
 
 
             destroy:function(){
@@ -37,7 +52,12 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
             },
 
             handleEvent:function(){
-
+                var name = event.name;
+                var args = Array.prototype.slice.call(arguments, 0);
+                var ctx = this.ctx || window;
+                if (_.isFunction(this._eventsHash[name])){
+                    this._eventsHash[name].apply(ctx, args);
+                }
             },
 
             /**
@@ -95,7 +115,6 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
             this.eventMapStack = [];
             this.eventRemovers = {};
             this.boundHandleEvent = _.bind(this.handleEvent, this);
-
         };
 
         _.extend(EventsObject.prototype, {
@@ -152,13 +171,9 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
                     }
                     var currentEventMap = this.eventMaps[this.eventMapsStack[i]];
                     if (currentEventMap.handles(name)) {
-                        currentEventMap.handleEvent.apply(targetEventMap, args);
+                        currentEventMap.handleEvent.apply(currentEventMap, args);
                     }
                 }
-            },
-
-            getCorrectEventMap:function(name){
-
             },
 
             /**
@@ -238,20 +253,24 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
             },
 
             /**
-             * setEventMap
-             * @description Set the event map to be used for all keyboard and mouse click input.
+             * pushEventMap
+             * @description Push an event map on to the stack to be used for the first pass of all keyboard and mouse input.
              * @param newEventMap string The event map to load.
              */
-            setEventMap: function (newEventMap) {
+            pushEventMap: function (newEventMap) {
                 if (_.isString(newEventMap) && this.eventMaps[newEventMap]) {
                     this.eventMapStack.push(newEventMap);
                     this.eventMapStackLength = this.eventMapStack.length;
                 }
             },
 
-            // Return a reference to the service
-            self: function () {
-                return EventsObject;
+            /**
+             * popEventMap 
+             * @description Pop the top event map off the stack, allowing the next event map to work.
+             * @return {[type]}
+             */
+            popEventMap:function(){
+                this.eventMapStack.pop();
             }
         });
 
@@ -260,6 +279,4 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
         return service;
     }]);
 
-});/**
- * Created by bryanerayner on 2014-04-10.
- */
+});

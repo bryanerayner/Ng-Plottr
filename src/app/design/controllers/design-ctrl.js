@@ -1,4 +1,4 @@
-define(['angular', './module', 'lodash'], function (ng, module, _) {
+define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Class) {
     'use strict';
 
     /**
@@ -12,16 +12,25 @@ define(['angular', './module', 'lodash'], function (ng, module, _) {
 
         $scope.data = {};
         $scope.io = {};
-        $scope.currentContext = {
+        var CurrentContext = Class.extend({
             width:0,
             height:0,
             designNodes:[],
             modeName:'',
             className:''
-        };
-        $scope.ui = {};
+        });
 
-        $scope.ui.availableTools = [];
+
+        $scope.currentContext = new CurrentContext();
+
+
+
+        $scope.ui = {};
+        $scope.ui.tools = DesignTools;
+
+        DesignTools.registerScope($scope);
+        DesignTools.registerCurrentContext($scope.currentContext);
+
 
         var loadPlotMode = $scope.io.loadPlotMode = function(plotModeId)
         {
