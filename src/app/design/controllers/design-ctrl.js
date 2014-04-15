@@ -16,8 +16,11 @@ define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Cl
             width:0,
             height:0,
             designNodes:[],
+            groups:[],
             modeName:'',
-            className:''
+            className:'',
+            selectedNodes:[],
+            selectedTool:null
         });
 
 

@@ -36,7 +36,6 @@ define(['jrClass', 'lodash'], function (Class, _) {
         releaseEventsObject: function () {
             delete this.eventsObject;
         }
-
     });
 
 

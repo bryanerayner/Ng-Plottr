@@ -24,25 +24,5 @@ define(['angular', 'lodash', './tool'], function (ng, _, Tool) {
 
     });
 
-    var cloneTool = new Tool('clone',
-		[
-		new EventMap('clone',{
-			'click:designNode':function(event, clickx, clicky)
-				{
-				this.selectedNode = event.nodeID;
-
-				this.eventsObject.pushEventMap('clone-chooseTarget');
-				}
-		}),
-		new EventMap('clone-chooseTarget',{
-			'click:designNode':function(event, clickx, clicky)
-			    {
-			        this.targetNode = event.nodeID;
-			    //Do stuff;
-			        this.eventsObject.popEventMap();
-			    }
-		})
-	]);
-
     return new SelectionTool();
 });

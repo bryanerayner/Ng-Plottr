@@ -11,6 +11,7 @@ define(['angular', './module', 'lodash', 'jrClass', './tool', './tools-selection
                     this.$scope = null;
                     this.eventsObject = new UIEvents.EventsObject();
 
+                    this.baseEventMap = null;
                     this.initTools(tools);
                 },
 
@@ -31,6 +32,20 @@ define(['angular', './module', 'lodash', 'jrClass', './tool', './tools-selection
                         tool.registerEventsObject(this.eventsObject);
                     });
 
+                    var newEventsHash = {};
+
+                    function selectToolCallback(toolname)
+                    {
+                        return function(){
+                            this.eventsObject.pushEventMap(toolname);
+                        };
+                    }
+
+                    _.each(eventsHash, function(defaultEventMap, key){
+                        newEventsHash[key] = selectToolCallback(defaultEventMap);
+                    });
+
+                    this.baseEventMap = new UIEvents.EventMap('base', );
 
                 },
 
