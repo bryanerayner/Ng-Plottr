@@ -37,21 +37,22 @@ require.config({
       jrClass:'../common/jrClass/jrClass'
   },
   shim: {
-    'angular': { exports: 'angular' },
-    'angularBootstrap': { deps: ['angular'] },
-    'angularUIRouter': { deps: ['angular'] },
-    'angularUIUtils': { deps: ['angular'] },
-    'angularMoment': { deps: ['angular'] },
-    'angularMocks': { deps: ['angular'] },
-    'restangular': {
-      'deps': [
-        'angular',
-        'lodash'
-      ]
-    },
-    'placeholders': { deps: ['angular'] },
-    'plusOne': { deps: ['angular'] },
-    'keystateService': {deps: ['angular', 'mousetrap'] }
+      'angular': { exports: 'angular' },
+      'angularBootstrap': { deps: ['angular'] },
+      'angularUIRouter': { deps: ['angular'] },
+      'angularUIUtils': { deps: ['angular'] },
+      'angularMoment': { deps: ['angular'] },
+      'angularMocks': { deps: ['angular'] },
+
+      'restangular': {
+          'deps': [
+              'angular',
+              'lodash'
+          ]
+      },
+      'placeholders': { deps: ['angular'] },
+      'plusOne': { deps: ['angular'] },
+      'keystateService': {deps: ['angular', 'mousetrap'] }
   },
   // ask Require.js to load these files (all our tests)
   deps: tests,

@@ -2,10 +2,11 @@ define(['angular', './module', 'lodash', 'jrClass', './tool', './tools-selection
 
     module.factory("DesignTools", ['KeystateService', 'UIEvents', function(KeystateService, UIEvents){
 
+        var keystateListener = KeystateService.keystateListener;
 
         var DesignTools = Class.extend(
             {
-                init:function(tools){
+                init:function(tools, keystateListener){
 
                     this.currentContext = null;
                     this.$scope = null;
@@ -13,6 +14,8 @@ define(['angular', './module', 'lodash', 'jrClass', './tool', './tools-selection
 
                     this.baseEventMap = null;
                     this.initTools(tools);
+
+                    this.keystateListener= keystateListener;
                 },
 
                 /**
@@ -29,6 +32,7 @@ define(['angular', './module', 'lodash', 'jrClass', './tool', './tools-selection
                         {
                             eventsHash[tool.keyboardShortcut] = tool.defaultEventMap;
                         }
+                        // This registers the events object, and adds all the event maps to it.
                         tool.registerEventsObject(this.eventsObject);
                     });
 
@@ -45,8 +49,12 @@ define(['angular', './module', 'lodash', 'jrClass', './tool', './tools-selection
                         newEventsHash[key] = selectToolCallback(defaultEventMap);
                     });
 
-                    this.baseEventMap = new UIEvents.EventMap('base', );
+                    this.baseEventMap = new UIEvents.EventMap('designTools-base', newEventsHash, this);
 
+                    // Add the event map
+                    this.eventsObject.addEventMap(this.baseEventMap);
+                    // Push it on.
+                    this.eventsObject.pushEventMap('designTools-base');
                 },
 
                 eachTools:function(callback){
@@ -64,14 +72,16 @@ define(['angular', './module', 'lodash', 'jrClass', './tool', './tools-selection
                 registerScope:function(newScope)
                 {
                     this.$scope = newScope;
+                    this.keystateListener.registerScope(newScope);
                     this.eventsObject.registerScope(newScope);
-//                    this.applyOnTools('registerScope', newScope);
+                    this.applyOnTools('registerScope', newScope);
                 },
 
                 releaseScope:function(){
                     delete this.$scope;
-                    this.eventsObject.releaseScope(newScope);
-//                    this.applyOnTools('releaseScope');
+                    this.eventsObject.releaseScope();
+                    this.keystateListener.releaseScope();
+                    this.applyOnTools('releaseScope');
                 },
 
                 registerCurrentContext:function(currentContext){
@@ -92,7 +102,7 @@ define(['angular', './module', 'lodash', 'jrClass', './tool', './tools-selection
         ];
 
 
-        var service = new DesignTools(tools);
+        var service = new DesignTools(tools, keystateListener);
 
         return service;
 

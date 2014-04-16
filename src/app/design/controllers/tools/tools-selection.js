@@ -1,6 +1,6 @@
 //Selection tool
 
-define(['angular', 'lodash', './tool'], function (ng, _, Tool) {
+define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], function (ng, _, Tool, EventMap) {
     'use strict';
 
 
@@ -9,10 +9,10 @@ define(['angular', 'lodash', './tool'], function (ng, _, Tool) {
         defaults:
         {
             name:'selection',
-            keyboardShortcut:'v',
+            keyboardShortcut:'keypress:v',
             eventMaps:[
                 new EventMap('selection',{
-                    'click:designNode':function(event, node)
+                    'click:designNode':function(event, jQEvent, node)
                     {
                         var nodeID = node.id;
                         this.currentContext.selectedNodes = _.union(this.currentContext.selectedNodes, [nodeID]);

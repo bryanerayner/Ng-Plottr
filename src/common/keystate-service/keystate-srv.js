@@ -9,7 +9,7 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
 
         ]);
 
-    module.factory("KeystateService", function(){
+    module.service("KeystateService", function(){
 
         var factory = {};
 
@@ -37,7 +37,7 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
                 }, this);
             },
             keydown:function(event){
-
+                
             },
             keyup:function(event){
 
@@ -53,12 +53,12 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
             {
                 var args = Array.prototype.slice.call(arguments, 0);
                 if (this.$scope){
-                    this.$scope[funcName]apply(this.$scope, args);
+                    this.$scope[funcName].apply(this.$scope, args);
                 }
-            }
+            };
         });
 
-
+        var keystateListener = new KeystateListener();
 
 
 
@@ -178,7 +178,8 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
             releaseEvents:releaseEvents,
             bindEvents:bindEvents,
             keyIsDown:keyIsDown,
-            keyIsUp:keyIsUp
+            keyIsUp:keyIsUp,
+            keystateListener:keystateListener
         });
 
         bindEvents();

@@ -1,11 +1,12 @@
 define(['angular'], function (ng) {
     'use strict';
     var module = ng.module('app.design.directives.designNode', []);
-    
+
+    var directiveName = 'designNode';
     /**
      * And of course we define a controller for our route.
      */
-    module.directive( 'designNode', function () {
+    module.directive( directiveName, function () {
         return {
             restrict:'E',
             controller:function($scope)
@@ -77,11 +78,7 @@ define(['angular'], function (ng) {
 
                     var sendEventFactory = function(evName){
                         return function(event){
-                            $scope.eventListener({
-                                eventName:evName,
-                                event:event,
-                                node:$scope.node
-                            });
+                            $scope.$emit(evName+':'+directiveName, event, $scope.node);
                         };
                     };
 

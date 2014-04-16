@@ -15,8 +15,9 @@ define(['jrClass', 'lodash'], function (Class, _) {
             this.keyboardShortcut = keyboardShortcut || this.defaults.keyboardShortcut;
             this.defaultEventMap = defaultEventMap || this.defaults.defaultEventMap || this.eventMaps[0].name;
             this.currentContext = null;
+            this.$scope = null;
 
-            _.each(eventMaps, function(eventMap){
+            _.each(this.eventMaps, function(eventMap){
                 eventMap.setContext(this);
             }, this);
         },
@@ -31,10 +32,25 @@ define(['jrClass', 'lodash'], function (Class, _) {
 
         registerEventsObject: function (eventsObject) {
             this.eventsObject = eventsObject;
+            _.each(this.eventMaps, function(eventMap){
+                this.eventsObject.addEventMap(eventMap);
+            }, this);
+
         },
 
         releaseEventsObject: function () {
+            _.each(this.eventMaps, function(eventMap){
+                this.eventsObject.removeEventMap(eventMap);
+            }, this);
             delete this.eventsObject;
+
+        },
+
+        registerScope:function(newScope){
+            this.$scope = newScope;
+        },
+        releaseScope:function(){
+            delete this.$scope;
         }
     });
 
