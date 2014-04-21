@@ -35,64 +35,66 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
 
 
     var CreationTool;
+
     CreationTool = Tool.extend({
-        defaults: {
-            name: 'creation',
-            keyboardShortcut: 'keydown:n',
-            eventMaps: [
-                new EventMap('creation', {
-                    'toolSelected':function(){
-                        this.createdNodeID = null;
-                    },
-                    'mousedown':function(jQEvent){
-
-                        var boundingClientRect = $scope.currentContext.currentContextDesignPanel.getBoundingClientRect();
-
-
-
-                        var newScreenX = boundingClientRect.top;
-                        var newScreenY = boundingClientRect.left;
-
-                        // Make a unique id.
-                        var newID = 0;
-
-                        var someFunc = function(node){
-                            return (newID == node.id);
-                        };
-
-                        while(_.some(this.currentContext.designNodes, someFunc)){
-                            newID++;
-                        }
-
-                        this.currentContext.designNodes.push(generateDesignNode(newID, newScreenX, newScreenY));
-                        this.createdNodeID = newID;
-                    },
-                    'mouseup':function(){
-                        this.createdNodeID = null;
-                    },
-                    'keydown:esc': function (event) {
-                        if (this.createdNodeID) {
-                            this.currentContext.designNodes = _.filter(this.currentContext.designNodes, function(designNode){
-                               return (designNode.id != this.createdNodeID);
-                            });
+            defaults: function () {
+                return {
+                    name: 'creation',
+                    keyboardShortcut:'keydown:n',
+                    eventMaps:[
+                    new EventMap('creation', {
+                        'toolSelected': function () {
                             this.createdNodeID = null;
-                            this.$scope.$apply();
+                        },
+                        'mousedown': function (jQEvent) {
+
+                            var boundingClientRect = $scope.currentContext.currentContextDesignPanel.getBoundingClientRect();
+
+
+                            var newScreenX = boundingClientRect.top;
+                            var newScreenY = boundingClientRect.left;
+
+                            // Make a unique id.
+                            var newID = 0;
+
+                            var someFunc = function (node) {
+                                return (newID == node.id);
+                            };
+
+                            while (_.some(this.currentContext.designNodes, someFunc)) {
+                                newID++;
+                            }
+
+                            this.currentContext.designNodes.push(generateDesignNode(newID, newScreenX, newScreenY));
+                            this.createdNodeID = newID;
+                        },
+                        'mouseup': function () {
+                            this.createdNodeID = null;
+                        },
+                        'keydown:esc': function (event) {
+                            if (this.createdNodeID) {
+                                this.currentContext.designNodes = _.filter(this.currentContext.designNodes, function (designNode) {
+                                    return (designNode.id != this.createdNodeID);
+                                });
+                                this.createdNodeID = null;
+                                this.$scope.$apply();
+                            }
+                        },
+                        'mousemove': function (event, jQEvent) {
+                            var newScreenX = jQEvent.screenX;
+                            var newScreenY = jQEvent.screenY;
+
+                            this.screenXDelta = newScreenX - this.prevScreenX;
+                            this.screenYDelta = newScreenY - this.prevScreenY;
+
+                            this.handleMouseMove();
+
+                            this.prevScreenX = newScreenX;
+                            this.prevScreenY = newScreenY;
                         }
-                    },
-                    'mousemove':function(event, jQEvent){
-                        var newScreenX = jQEvent.screenX;
-                        var newScreenY = jQEvent.screenY;
-
-                        this.screenXDelta = newScreenX - this.prevScreenX;
-                        this.screenYDelta = newScreenY - this.prevScreenY;
-
-                        this.handleMouseMove();
-
-                        this.prevScreenX = newScreenX;
-                        this.prevScreenY = newScreenY;
-                    }
-                })
-            ]
+                    })
+                ]
+            };
         },
 
         prevScreenX:0,

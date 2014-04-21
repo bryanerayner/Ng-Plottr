@@ -3,14 +3,20 @@ define(['jrClass', 'lodash'], function (Class, _) {
     var Tool;
     Tool = Class.extend({
 
-        defaults: {
-            name: null,
-            keyboardShortcut: null,
-            eventMaps: [],
-            defaultEventMap: null
+        defaults: function(){
+            return {
+                name: null,
+                    keyboardShortcut: null,
+                eventMaps: [],
+                defaultEventMap: null
+            };
         },
 
         init: function (name, eventMaps, keyboardShortcut, defaultEventMap) {
+            if (_.isFunction(this.defaults))
+            {
+                this.defaults = this.defaults();
+            }
             this.name = name || this.defaults.name;
             this.eventMaps = eventMaps || this.defaults.eventMaps;
             this.keyboardShortcut = keyboardShortcut || this.defaults.keyboardShortcut;

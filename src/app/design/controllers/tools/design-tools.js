@@ -1,11 +1,7 @@
-var needs = ['angular', './module', 'lodash', 'jrClass', './tool'];
-
-needs = needs.concat([
+define(['angular', './module', 'lodash', 'jrClass', './tool',
     './tool-creation',
     './tool-selection'
-]);
-
-define(needs, function (ng, module, _, Class, Tool) {
+], function (ng, module, _, Class, Tool) {
 
     // Figure out all loaded tools:
 

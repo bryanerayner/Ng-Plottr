@@ -6,7 +6,8 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
 
     var SelectionTool;
     SelectionTool = Tool.extend({
-        defaults: {
+        defaults: function(){
+            return{
             name: 'selection',
             keyboardShortcut: 'keydown:v',
             eventMaps: [
@@ -65,6 +66,7 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                     }
                 })
             ]
+        };
         },
 
         mouseDownOnSelectedNode:false,
