@@ -1,6 +1,13 @@
 <div>
 
-    <section class = "currentContext design" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative;">
+    <section class = "toolbar toolbar-mainTools">
+        <ul ng-repeat="tool in ui.tools.tools" class = "icon_list">
+            <li ng-class = "{icon_list_item: true, selected: tool.isSelected}">{{tool.name}}</li>
+        </ul>
+
+    </section>
+
+    <section class = "currentContext design" id = "currentContextDesignPanel" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative;">
 
         <div ng-repeat = "node in currentContext.designNodes">
             <design-node plot="currentContext.plot" node = "node" event-listener="ui.events.triggerUIEvent(eventName, event, node)"></design-node>

@@ -100,6 +100,8 @@ define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Cl
 
 
 
+        $scope.currentContext.currentContextDesignPanel = document.getElementById('#currentContextDesignPanel');
+
 
     }]);
 

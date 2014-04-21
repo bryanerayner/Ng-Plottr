@@ -1,3 +1,3 @@
 define([
-    './tools'
+    './design-tools'
 ], function () {});

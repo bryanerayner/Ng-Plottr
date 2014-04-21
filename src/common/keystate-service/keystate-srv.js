@@ -9,17 +9,138 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
 
         ]);
 
-    module.service("KeystateService", function(){
+    module.service("KeystateService", ['$rootScope', function($rootScope){
 
         var factory = {};
 
         var eventsList = ['keydown','keyup','keypress'];
 
-        var KeystateListener = factory.KeystateListener = function(){
 
+        var KEY_CODES = {
+            8:'backspace',
+            9:'tab',
+            13:'enter',
+            16:'shift',
+            17:'ctrl',
+            18:'alt',
+            19:'pause/break',
+            20:'caps',
+            27:'esc',
+            33:'pgUp',
+            34:'pgDown',
+            35:'end',
+            36:'home',
+            37:'left',
+            38:'up',
+            39:'right',
+            40:'down',
+            45:'insert',
+            46:'delete',
+            91:'super_left',
+            92:'super_right',
+            93:'select',
+            96:'num0',
+            97:'num1',
+            98:'num2',
+            99:'num3',
+            100:'num4',
+            101:'num5',
+            102:'num6',
+            103:'num7',
+            104:'num8',
+            105:'num9',
+            106:'multiply',
+            107:'add',
+            109:'subtract',
+            110:'.',
+            111:'/',
+            112:'f1',
+            113:'f2',
+            114:'f3',
+            115:'f4',
+            116:'f5',
+            117:'f6',
+            118:'f7',
+            119:'f8',
+            120:'f9',
+            121:'f10',
+            122:'f11',
+            123:'f12',
+
+            144:'numLock',
+            145:'scrollLock',
+            186:';',
+            187:'=',
+            188:',',
+            189:'-',
+            190:'.',
+            191:'/',
+            219:'[',
+            220:'\\',
+            221:']',
+            222:'\''
+        };
+
+        var INVERSE_KEY_CODES = {};
+
+        var environment = 'pc';
+        if (navigator.userAgent.indexOf('Mac OS X') != -1) {
+            environment = 'mac';
+        }
+
+
+        var EXT_MAPPING = {
+            'super_left':'super',
+            'super_right':'super'
+        };
+
+        var INVERSE_EXT_MAPPING = {
+            'super':['super_left', 'super_right']
+        };
+
+        // Set up the environemtn for mac.
+        if (environment == 'mac'){
+            _.extend(EXT_MAPPING, {
+                'super_left':'ctrl',
+                'super_right':'select',
+                'select':'ctrl',
+                'ctrl':'super'
+            });
+            _.extend(INVERSE_EXT_MAPPING, {
+                'ctrl':['super_left', 'select'],
+                'super':['ctrl'],
+                'select':['super_right']
+            });
+        }
+
+        var SIGNIFICANT_KEYS = [
+            'super',
+            'ctrl',
+            'select',
+            'shift',
+            'alt'
+        ];
+
+        var updateKeyCodes = function(keyCode){
+            KEY_CODES[keyCode] = String.fromCharCode(keyCode).toLowerCase();
+            INVERSE_KEY_CODES = _.invert(KEY_CODES);
+            return KEY_CODES[keyCode];
+        };
+
+
+        var arraySwap = function(array, index1, index2)
+        {
+            var temp = _.clone(array[index1]);
+            array[index1] = _.clone(array[index2]);
+            array[index2] = temp;
+            return array;
+        };
+
+        var KeystateListener = function(){
             this._pressedKeys = {};
-            this._configure();
+            this._previousKeys = {};
             this.$scope = null;
+            this._configure();
         };
 
         _.extend(KeystateListener.prototype, {
@@ -29,6 +150,51 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
             releaseScope:function($scope){
                 delete this.$scope;
             },
+
+            keyIsDown:function(key){
+                if (_.isNumber(key)){
+                    return this._pressedKeys[key];
+                }else if (_.isString(key)){
+                    if (INVERSE_EXT_MAPPING[key])
+                    {
+                        return _.some(INVERSE_EXT_MAPPING[key], function(keyName){
+                            return !!this._pressedKeys[INVERSE_KEY_CODES[keyName]];
+                        }, this);
+                    }
+                    return !!this._pressedKeys[INVERSE_KEY_CODES[key]];
+                }
+                return false;
+            },
+
+            keyIsUp:function(key){
+                if (_.isNumber(key) || _.isString(key))
+                {
+                    return !this.keyIsDown(key);
+                }
+                return false;
+            },
+
+
+            /**
+             * Return the key name associated with a key code. If keyCode is a string, sanitizes the keycode.
+             * @param keyCode
+             */
+            keyName:function(keyCode)
+            {
+                // Start filling up KEY_CODES with pressed char codes.
+                var ret = KEY_CODES[keyCode] || (ret = updateKeyCodes(keyCode));
+
+                if (!EXT_MAPPING[ret]) {
+                    return ret;
+                }
+
+                // If there is an extension mapping for this key, apply it.
+                ret = EXT_MAPPING[ret];
+
+
+                return ret;
+            },
+
             _configure:function(){
                 var docEl = ng.element(document);
                 _.each(eventsList, function(eventName){
@@ -36,14 +202,113 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
                     docEl.on(eventName, boundEventCallback);
                 }, this);
             },
+
+            _permuteKeyPresses: _.memoize(function(list){
+               var answer = [];
+
+               var permute = function(list, n, i){
+
+                   var j;
+
+                   // We are at the end of the array, store the permutation.
+                   if (i == n){
+                       answer.push(list.join('+'));
+                   }else{
+                       for (j=i; j < n; j++)
+                       {
+                           // Swap i and j in the array
+                           arraySwap(list, i, j);
+                           permute(list, n, i+1);
+
+                           // Swap i and j back to where they were
+                           arraySwap(list, i, j);
+                       }
+                   }
+               };
+
+
+               permute(list, list.length, 0);
+
+               return _.compact(answer);
+            }, function(list){return list.join("+");}),
+
+            handleKeyEvent:function(event){
+                // Check all the pressed keys to detect changes.
+                var changes = _.compact(_.map(this._pressedKeys, function(value, key){
+                    if (this._previousKeys[key] != this._pressedKeys[key])
+                    {
+                        return parseInt(key);
+                    }
+                }, this));
+
+                // Calculate and fire an event for each keychange.
+                _.each(changes, function(key){
+                    this.fireEvents(key, event);
+                }, this);
+
+                // Store the changes in the previous keys
+                _.each(changes, function(key){
+                    this._previousKeys[key] = this._pressedKeys[key];
+                }, this);
+            },
+
+            fireEvents:function(key, event)
+            {
+                var events = [];
+                var eventType = '';
+                if (!this._previousKeys[key] && this._pressedKeys[key]){
+                    eventType = 'keydown';
+                }
+                else if (this._previousKeys[key] && !this._pressedKeys[key]){
+                    eventType = 'keyup';
+                }
+                else if (!this._previousKeys[key] && this._pressedKeys[key]){
+                    eventType = 'keypress';
+                }
+
+                var keyName = this.keyName(key);
+
+                // Push some events to fire
+                events.push(eventType);
+                events.push(eventType+':'+keyName);
+
+                // If this is a press, fire 'v', 'ctrl+v', ctrl+shift+v' style events
+                if(eventType != 'keyup') {
+                    events.push(keyName);
+
+                    var SigKeysDown = [];
+                    _.each(SIGNIFICANT_KEYS, function(sigKeyName){
+                        if (this.keyIsDown(sigKeyName))
+                        {
+                            SigKeysDown.push(sigKeyName);
+                        }
+                    }, this);
+
+                    // Get a permutation of all the ways the significant key presses have been
+                    // eg. 'ctrl+alt' and 'alt+ctrl'
+                    var permutations = this._permuteKeyPresses(SigKeysDown);
+
+                    _.each(permutations, function(permutation){
+                        events.push(permutation+'+'+keyName);
+                    });
+                }
+
+                _.each(events,function(eventName){
+                    this.$broadcast(eventName, event);
+                }, this);
+            },
+
             keydown:function(event){
-                
+                this._pressedKeys[event.keyCode] = true;
+                this.handleKeyEvent(event);
             },
             keyup:function(event){
-
+                this._pressedKeys[event.keyCode] = false;
+                this.handleKeyEvent(event);
             },
             keypress:function(event){
-
+                this._pressedKeys[event.keyCode] = true;
+                this.handleKeyEvent(event);
             }
         });
 
@@ -60,131 +325,21 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
 
         var keystateListener = new KeystateListener();
 
+        keystateListener.registerScope($rootScope);
 
 
-        var eventsBound = false;
-
-        var keyListeners = [
-            'backspace',
-            'tab',
-            'enter',
-            'shift',
-            'ctrl',
-            'alt',
-            'capslock',
-            'esc',
-            'space',
-            'pageup',
-            'pagedown',
-            'end',
-            'home',
-            'left',
-            'up',
-            'right',
-            'down',
-            'ins',
-            'del',
-            'meta',
-            '+',
-            '-',
-            '.',
-            '/',
-            ';',
-            '=',
-            ',',
-            '`',
-            '[',
-            '\\',
-            ']',
-            '\''
-        ];
-        var alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
-        for (var i = 0, ii = alphabet.length; i < ii; i++){
-            keyListeners.push(alphabet.charAt(i));
-        }
-        for (i = 1, ii = 20; i < ii; i++){
-            keyListeners.push('f' + i);
-        }
-
-        var pressedKeys = {};
-
-        function pressedStateFactory(upDown, key){
-            if (upDown == 'up')
-            {
-                return function(){
-                    pressedKeys[key] = false;
-                };
-            }else if (upDown == 'down'){
-                return function(){
-                    pressedKeys[key] = true;
-                };
-            }
-        }
-
-        var _SPECIAL_ALIASES = {
-            'option': 'alt',
-            'command': 'meta',
-            'return': 'enter',
-            'escape': 'esc',
-            'mod': /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? 'meta' : 'ctrl'
-        };
-
-
-
-        function releaseEvents(){
-            if (eventsBound) {
-                for (i = 0, ii = keyListeners.length; i < ii; i++) {
-                    Mousetrap.unbind(keyListeners[i]);
-                }
-
-                var key;
-                for (key in pressedKeys) {
-                    pressedKeys[key] = false;
-                }
-                eventsBound = false;
-            }
-        }
-
-        function bindEvents(){
-            var i, ii;
-            if (!eventsBound){
-                for (i=0, ii= keyListeners.length; i < ii; i++){
-                    Mousetrap.bind(keyListeners[i], pressedStateFactory('up', keyListeners[i]), 'keyup');
-                    Mousetrap.bind(keyListeners[i], pressedStateFactory('down', keyListeners[i]), 'keydown');
-                }
-                eventsBound = true;
-            }
-        }
-
-        function keyIsDown(key){
-
-            if (_SPECIAL_ALIASES[key]) {
-                key = _SPECIAL_ALIASES[key];
-            }
-
-            if (pressedKeys[key])
-            {
-                return true;
-            }else{
-                return false;
-            }
-        }
-
-        function keyIsUp(key){
-            return !keyIsDown(key);
-        }
 
         _.extend(factory, {
-            releaseEvents:releaseEvents,
-            bindEvents:bindEvents,
-            keyIsDown:keyIsDown,
-            keyIsUp:keyIsUp,
+            keyIsDown:function(key){
+                return keystateListener.keyIsDown(key);
+            },
+            keyIsUp:function(key){
+                return keystateListener.keyIsUp(key);
+            },
             keystateListener:keystateListener
         });
 
-        bindEvents();
-
         return factory;
-    });
+    }]);
 
 });

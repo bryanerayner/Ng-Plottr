@@ -25,6 +25,7 @@ require.config({
         plusOne: '../common/plusOne/plusOne',
         angularTemplateCache: '../common/angular-templatecache/angular-templatecache',
         keystateService:'../common/keystate-service/keystate-srv',
+        mouseEventsService:'../common/mouseEvents-service/mouseEvents-srv',
         mousetrap:'../common/mousetrap/mousetrap',
         jrClass:'../common/jrClass/jrClass'
 
@@ -55,7 +56,10 @@ require.config({
             deps: ["angular"]
         },
         "keystateService":{
-            deps: ["angular", "mousetrap"]
+            deps: ["angular", "lodash"]
+        },
+        "mouseEventsService":{
+            deps: ["angular", "lodash", "jrClass"]
         }
     },
 

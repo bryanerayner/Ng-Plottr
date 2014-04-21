@@ -55,7 +55,7 @@ _.extend(EventsObject.prototype, {
         // Have to clone the event here.... We need to keep the original stuff before we mutate it.
         var newEvent = _.clone(event);
 
-        var origStopProp = event.stopPropagation;
+        var origStopProp = event.stopPropagation || function(){};
 
 
         newEvent.stopPropagation = function(){
@@ -77,8 +77,11 @@ _.extend(EventsObject.prototype, {
             var currentEventMap = this.eventMaps[this.eventMapStack[i-1]];
             if (currentEventMap.handles(name)) {
                 currentEventMap.handleEvent.apply(currentEventMap, newArgs );
+                // Apply any changes that were made to $scope. This prevents a need to call this from within each tool.
+                this.$scope.$apply();
             }
         }
+
     },
 
     /**
@@ -177,8 +180,13 @@ _.extend(EventsObject.prototype, {
      */
     pushEventMap: function (newEventMap) {
         if (_.isString(newEventMap) && this.eventMaps[newEventMap]) {
-            this.eventMapStack.push(newEventMap);
-            this.eventMapStackLength = this.eventMapStack.length;
+
+            // Prevent duplicate loading in the stack
+            if (this.eventMapStack[this.eventMapStackLength - 1] != newEventMap)
+            {
+                this.eventMapStack.push(newEventMap);
+                this.eventMapStackLength = this.eventMapStack.length;
+            }
         }
     },
 
@@ -189,6 +197,11 @@ _.extend(EventsObject.prototype, {
      */
     popEventMap:function(){
         this.eventMapStack.pop();
+        this.eventMapStackLength = this.eventMapStack.length;
+    },
+
+    currentEventMap:function(){
+        return this.eventMapStack[this.eventMapStackLength-1];
     },
 
     /**

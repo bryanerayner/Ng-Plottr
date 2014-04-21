@@ -34,7 +34,8 @@ require.config({
     angularTemplateCache: '../common/angular-templatecache/angular-templatecache',
     keystateService:'../common/keystate-service/keystate-srv',
       mousetrap:'../common/mousetrap/mousetrap',
-      jrClass:'../common/jrClass/jrClass'
+      jrClass:'../common/jrClass/jrClass',
+      mouseEventsService:'../common/mouseEvents-service/mouseEvents-srv'
   },
   shim: {
       'angular': { exports: 'angular' },
@@ -52,7 +53,8 @@ require.config({
       },
       'placeholders': { deps: ['angular'] },
       'plusOne': { deps: ['angular'] },
-      'keystateService': {deps: ['angular', 'mousetrap'] }
+      'keystateService': {deps: ['angular', 'lodash'] },
+      'mouseEventsService': {deps: ['angular', 'lodash', 'jrClass'] }
   },
   // ask Require.js to load these files (all our tests)
   deps: tests,

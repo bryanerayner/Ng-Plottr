@@ -1,12 +1,13 @@
 define(['jrClass', 'lodash'], function (Class, _) {
 
-    var Tool = Class.extend({
+    var Tool;
+    Tool = Class.extend({
 
-        defaults:{
-            name:null,
-            keyboardShortcut:null,
-            eventMaps:[],
-            defaultEventMap:null
+        defaults: {
+            name: null,
+            keyboardShortcut: null,
+            eventMaps: [],
+            defaultEventMap: null
         },
 
         init: function (name, eventMaps, keyboardShortcut, defaultEventMap) {
@@ -16,10 +17,21 @@ define(['jrClass', 'lodash'], function (Class, _) {
             this.defaultEventMap = defaultEventMap || this.defaults.defaultEventMap || this.eventMaps[0].name;
             this.currentContext = null;
             this.$scope = null;
+            this.isSelected = false;
+            this.keyboardService = null;
 
-            _.each(this.eventMaps, function(eventMap){
+            _.each(this.eventMaps, function (eventMap) {
                 eventMap.setContext(this);
             }, this);
+        },
+
+        // These are both overridden by anything using the tool.
+        keyIsDown:function(key){
+            return false;
+        },
+
+        keyIsUp:function(key){
+            return false;
         },
 
         registerCurrentContext: function (context) {
@@ -32,26 +44,34 @@ define(['jrClass', 'lodash'], function (Class, _) {
 
         registerEventsObject: function (eventsObject) {
             this.eventsObject = eventsObject;
-            _.each(this.eventMaps, function(eventMap){
+            _.each(this.eventMaps, function (eventMap) {
                 this.eventsObject.addEventMap(eventMap);
             }, this);
 
         },
 
         releaseEventsObject: function () {
-            _.each(this.eventMaps, function(eventMap){
+            _.each(this.eventMaps, function (eventMap) {
                 this.eventsObject.removeEventMap(eventMap);
             }, this);
             delete this.eventsObject;
 
         },
 
-        registerScope:function(newScope){
+        registerScope: function (newScope) {
             this.$scope = newScope;
         },
-        releaseScope:function(){
+        releaseScope: function () {
             delete this.$scope;
+        },
+
+        ownsEventMap: function (eventMapName) {
+            var matchingMaps = _.filter(this.eventMaps, function (eventMap) {
+                return eventMap.name === eventMapName;
+            });
+            return (matchingMaps.length > 0);
         }
+
     });
 
 
