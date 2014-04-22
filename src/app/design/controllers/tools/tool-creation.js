@@ -41,6 +41,7 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                 return {
                     name: 'creation',
                     keyboardShortcut:'keydown:n',
+                    glyphicon:'glyphicon glyphicon-plus',
                     eventMaps:[
                     new EventMap('creation', {
                         'toolSelected': function () {
@@ -57,7 +58,9 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                             var newPageX = mousePos.pageX;
                             var newPageY = mousePos.pageY;
 
-                            if (newPageX > boundingClientRect.width || newPageY > boundingClientRect.height){
+                            if (newPageX > boundingClientRect.width ||
+                                newPageY > boundingClientRect.height ||
+                                newPageX < 0 || newPageY < 0){
                                 return; // This is not in bounds of the current design scope. Return.
                             }
                             // Make a unique id.

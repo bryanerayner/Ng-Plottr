@@ -8,8 +8,9 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
     SelectionTool = Tool.extend({
         defaults: function(){
             return{
-            name: 'selection',
-            keyboardShortcut: 'keydown:v',
+                name: 'selection',
+                keyboardShortcut: 'keydown:v',
+                glyphicon:'glyphicon glyphicon-flash',
             eventMaps: [
                 new EventMap('selection', {
                     'toolSelected':function(){
@@ -43,16 +44,16 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                         this.currentContext.selectedNodes = [];
                     },
                     'mousemove':function(event, jQEvent){
-                        var newScreenX = jQEvent.screenX;
-                        var newScreenY = jQEvent.screenY;
+                        var newPageX = jQEvent.pageX;
+                        var newPageY = jQEvent.pageY;
 
-                        this.pageXDelta = newScreenX - this.prevPageX;
-                        this.pageYDelta = newScreenY - this.prevPageY;
+                        this.pageXDelta = newPageX - this.prevPageX;
+                        this.pageYDelta = newPageY - this.prevPageY;
 
                         this.handleMouseMove();
 
-                        this.prevPageX = newScreenX;
-                        this.prevPageY = newScreenY;
+                        this.prevPageX = newPageX;
+                        this.prevPageY = newPageY;
                     },
                     'ctrl+]':function()
                     {

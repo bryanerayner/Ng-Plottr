@@ -37,6 +37,27 @@ define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Cl
         $scope.ui = {};
         $scope.ui.tools = DesignTools;
 
+        $scope.ui.selection = {};
+
+        $scope.ui.selection.addToSelection = function(nodeID){
+            $scope.currentContext.selectedNodes.push(nodeID);
+            $scope.currentContext.selectedNodes = _.uniq($scope.currentContext.selectedNodes);
+            $scope.$apply();
+        };
+
+        $scope.ui.selection.toggleSelection = function(nodeID){
+            if ($scope.ui.selection.nodeIsSelected (nodeID)){
+                $scope.currentContext.selectedNodes = _.without($scope.currentContext.selectedNodes, nodeID);
+            }else{
+                $scope.ui.selection.addToSelection(nodeID);
+            }
+        };
+
+        $scope.ui.selection.nodeIsSelected = function(nodeID) {
+            return _.contains($scope.currentContext.selectedNodes, nodeID);
+        };
+
+
         DesignTools.registerScope($scope);
         DesignTools.registerCurrentContext($scope.currentContext);
 

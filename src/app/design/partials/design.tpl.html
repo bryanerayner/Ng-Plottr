@@ -1,22 +1,34 @@
-<div>
+<div class = "container">
+    <div class = "row">
 
-    <section class = "toolbar toolbar-mainTools">
-        <ul ng-repeat="tool in ui.tools.tools" class = "icon_list">
-            <li ng-class = "{icon_list_item: true, selected: tool.isSelected}">{{tool.name}}</li>
-        </ul>
+        <section class = "toolbar toolbar-mainTools col-xs-2">
+            <ul class = "icon_list btn-group-vertical">
+                <li ng-repeat="tool in ui.tools.tools">
+                    <button ng-class = "{'btn':true, 'btn-primary':tool.isSelected, 'btn-default':!tool.isSelected}" ng-click = "ui.tools.selectTool(tool.name)">
+                        <span ng-class="tool.glyphicon"></span><span>{{tool.name}}</span>
+                    </button>
+                </li>
+            </ul>
 
-    </section>
-
-    <section class = "currentContext design user-select-none" id = "currentContextDesignPanel" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative; border:1px solid #000000;" ng-mousedown="ui.events.mousedown($event, 'designPanel')">
-
-        <div ng-repeat = "node in currentContext.designNodes">
-            <design-node plot="currentContext.plot" selectedNodes = "currentContext.selectedNodes" node = "node" event-listener="ui.events.triggerUIEvent(eventName, event, node)"></design-node>
-        </div>
-    </section>
+        </section>
 
 
-    <ul ng-repeat = "selection in currentContext.selectedNodes">
-        <li>{{selection}}</li>
-    </ul>
+        <section class = "col-xs-7">
+            <div class = "currentContext design user-select-none" id = "currentContextDesignPanel" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative; border:1px solid #000000;" ng-mousedown="ui.events.mousedown($event, 'designPanel')">
+                <div ng-repeat = "node in currentContext.designNodes">
+                    <design-node plot="currentContext.plot" selectedNodes = "currentContext.selectedNodes" node = "node" event-listener="ui.events.triggerUIEvent(eventName, event, node)"></design-node>
+                </div>
+            </div>
+        </section>
 
+
+        <section class = "col-xs-3">
+            <ul ng-repeat = "node in currentContext.designNodes">
+                <li class = "row" ng-click = "ui.tools.selectTool('selection');ui.selection.toggleSelection(node.id)">
+                    <span ng-class = "{'col-xs-12':true, 'bg-success':ui.selection.nodeIsSelected(node.id)}">{{node.id}}</span>
+                </li>
+            </ul>
+        </section>
+
+    </div>
 </div>

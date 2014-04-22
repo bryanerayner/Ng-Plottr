@@ -8,7 +8,8 @@ define(['jrClass', 'lodash'], function (Class, _) {
                 name: null,
                     keyboardShortcut: null,
                 eventMaps: [],
-                defaultEventMap: null
+                defaultEventMap: null,
+                glyphicon:''
             };
         },
 
