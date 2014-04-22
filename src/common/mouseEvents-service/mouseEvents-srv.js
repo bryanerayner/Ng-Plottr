@@ -31,10 +31,10 @@ define(['angular', 'lodash', 'jrClass'], function (ng, _ , Class) {
             },
 
             _configure:function(){
-                var docEl = ng.element(document);
+                var bodyEl = ng.element(document.querySelector('body'));
                 _.each(eventsList, function(eventName){
                     var boundEventCallback = _.bind(this[eventName], this);
-                    docEl.on(eventName, boundEventCallback);
+                    bodyEl.on(eventName, boundEventCallback);
                 }, this);
             },
 
@@ -44,11 +44,12 @@ define(['angular', 'lodash', 'jrClass'], function (ng, _ , Class) {
 
             mousedown:function(event){
                 this.mouseButtonDown = true;
+                this.baseMouseEventHandler('mousedown', event);
             },
             mouseup:function(event){
                 this.mouseButtonDown = false;
+                this.baseMouseEventHandler('mouseup', event);
             },
-
             baseMouseEventHandler:function(eventName, event)
             {
                 this.$broadcast(eventName, event);

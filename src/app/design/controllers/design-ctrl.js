@@ -13,14 +13,20 @@ define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Cl
         $scope.data = {};
         $scope.io = {};
         var CurrentContext = Class.extend({
-            width:0,
-            height:0,
-            designNodes:[],
-            groups:[],
-            modeName:'',
-            className:'',
-            selectedNodes:[],
-            selectedTool:null
+            init:function(){
+                this.width=0;
+                this.height=0;
+                this.designNodes=[];
+                this.groups=[];
+                this.modeName='';
+                this.className='';
+                this.selectedNodes=[];
+                this.selectedTool=null;
+            },
+
+            getDesignPanel:function(){
+                return document.getElementById('currentContextDesignPanel');
+            }
         });
 
 
@@ -34,6 +40,11 @@ define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Cl
         DesignTools.registerScope($scope);
         DesignTools.registerCurrentContext($scope.currentContext);
 
+        $scope.ui.events = {
+            mousedown:function($event, targetType){
+                $scope.$emit('mousedown:'+targetType);
+            }
+        };
 
 
 
@@ -100,7 +111,6 @@ define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Cl
 
 
 
-        $scope.currentContext.currentContextDesignPanel = document.getElementById('#currentContextDesignPanel');
 
 
     }]);

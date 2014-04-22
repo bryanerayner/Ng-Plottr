@@ -16,31 +16,21 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                         this.mouseDownOnSelectedNode = false;
                     },
 
-                    'click:designNode': function (event, jQEvent, node) {
-                        var nodeID = node.id;
-                        var selectedNodes = this.currentContext.selectedNodes;
-                        if (this.keyIsDown('shift') || this.keyIsDown('ctrl'))
-                        {
-                            if (_.contains(selectedNodes, nodeID)) {
-                                selectedNodes = _.without(selectedNodes, nodeID);
-                            }
-                            else {
-                                selectedNodes = _.union(selectedNodes, [nodeID]);
-                            }
-                        }else{
-                            selectedNodes = [nodeID];
-                        }
-                        // If shift or ctrl is down, we make this an additive selection.
+//                    'click:designNode': function (event, jQEvent, node) {
+//                        this.modifySelectedNodes(node);
+//                    },
+                    'mousedown:designPanel':function(event, jQEvent){
+                        this.currentContext.selectedNodes = [];
+                        this.mouseDownOnSelectedNode = false;
 
-                        this.currentContext.selectedNodes = selectedNodes;
+                        event.stopPropagation();
                     },
                     'mousedown:designNode':function(event, jQEvent, node){
-                        var nodeID = node.id;
-                        if (_.contains(this.currentContext.selectedNodes, nodeID))
-                        {
+                        if (!this.mouseDownOnSelectedNode){
+                            this.modifySelectedNodes(node);
                             this.mouseDownOnSelectedNode = true;
-                        }else{
-                            this.mouseDownOnSelectedNode = false;
+                            event.stopPropagation();
+                            jQEvent.stopImmediatePropagation();
                         }
                     },
                     'mouseup':function(){
@@ -56,13 +46,50 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                         var newScreenX = jQEvent.screenX;
                         var newScreenY = jQEvent.screenY;
 
-                        this.screenXDelta = newScreenX - this.prevScreenX;
-                        this.screenYDelta = newScreenY - this.prevScreenY;
+                        this.pageXDelta = newScreenX - this.prevPageX;
+                        this.pageYDelta = newScreenY - this.prevPageY;
 
                         this.handleMouseMove();
 
-                        this.prevScreenX = newScreenX;
-                        this.prevScreenY = newScreenY;
+                        this.prevPageX = newScreenX;
+                        this.prevPageY = newScreenY;
+                    },
+                    'ctrl+]':function()
+                    {
+                        this.eachSelectedNode(function(node){
+                           node.layout.zIndex++;
+                        });
+                    },
+                    'ctrl+[':function()
+                    {
+                        this.eachSelectedNode(function(node){
+                            node.layout.zIndex--;
+                            if (node.zIndex < 0) {node.zIndex = 0;}
+                        });
+                    },
+                    'left':function(){
+                        this.nudgeSelectedNodes({left:-1});
+                    },
+                    'right':function(){
+                        this.nudgeSelectedNodes({left:1});
+                    },
+                    'up':function(){
+                        this.nudgeSelectedNodes({top:-1});
+                    },
+                    'down':function(){
+                        this.nudgeSelectedNodes({top:1});
+                    },
+                    'shift+left':function(){
+                        this.nudgeSelectedNodes({left:-10});
+                    },
+                    'shift+right':function(){
+                        this.nudgeSelectedNodes({left:10});
+                    },
+                    'shift+up':function(){
+                        this.nudgeSelectedNodes({top:-10});
+                    },
+                    'shift+down':function(){
+                        this.nudgeSelectedNodes({top:10});
                     }
                 })
             ]
@@ -70,10 +97,26 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
         },
 
         mouseDownOnSelectedNode:false,
-        prevScreenX:0,
-        prevScreenY:0,
-        screenXDelta:0,
-        screenYDelta:0,
+        prevPageX:0,
+        prevPageY:0,
+        pageXDelta:0,
+        pageYDelta:0,
+
+        eachSelectedNode:function(callback){
+            _.each(this.currentContext.selectedNodes, function(node){
+                var cNode = _.where(this.currentContext.designNodes, {id:node});
+                if (cNode.length){
+                    callback(cNode[0]);
+                }
+            }, this);
+        },
+
+        nudgeSelectedNodes:function(offset){
+            this.eachSelectedNode(function(node){
+                node.layout.left += offset.left || 0;
+                node.layout.top += offset.top || 0;
+            });
+        },
 
         handleMouseMove:function()
         {
@@ -83,12 +126,32 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                     var designNodes = _.where(this.currentContext.designNodes, {id:selectedNode});
                     if (designNodes.length)
                     {
-                        designNodes[0].layout.left += this.screenXDelta;
-                        designNodes[0].layout.top += this.screenYDelta;
+                        designNodes[0].layout.left += this.pageXDelta;
+                        designNodes[0].layout.top += this.pageYDelta;
                     }
                 }, this);
             }
-            this.$scope.$apply();
+        },
+
+        modifySelectedNodes:function(node)
+        {
+            var nodeID = node.id;
+            var selectedNodes = this.currentContext.selectedNodes;
+            if (this.keyIsDown('shift') || this.keyIsDown('ctrl'))
+            {
+                if (_.contains(selectedNodes, nodeID)) {
+                    selectedNodes = _.without(selectedNodes, nodeID);
+                }
+                else {
+                    selectedNodes = _.union(selectedNodes, [nodeID]);
+                }
+            }else{
+                if (!_.contains(selectedNodes, nodeID)) {
+                    selectedNodes = [nodeID];
+                }
+            }
+            // If shift or ctrl is down, we make this an additive selection.
+            this.currentContext.selectedNodes = selectedNodes;
         }
 
     });

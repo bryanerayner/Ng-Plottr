@@ -1,4 +1,4 @@
-define(['angular'], function (ng) {
+define(['angular', 'lodash'], function (ng, _) {
     'use strict';
     var module = ng.module('app.design.directives.designNode', []);
 
@@ -26,7 +26,8 @@ define(['angular'], function (ng) {
             scope:{
                 plot:'=plot',
                 node:"=node",
-                eventListener:'&eventListener'
+                eventListener:'&eventListener',
+                selectedNodes:'&selectedNodes'
             },
             link:function($scope, $elem, $attrs){
 
@@ -43,8 +44,8 @@ define(['angular'], function (ng) {
                 var layoutDefaults = {
                     left:0,
                     top:0,
-                    width:50,
-                    height:50,
+                    width:0,
+                    height:0,
                     zIndex:0,
                     nestOrder:0
                 };
@@ -106,20 +107,48 @@ define(['angular'], function (ng) {
                     zIndex:""
                 };
 
-                function updateStyle(){
+                function updateLayout(){
+                    var styleRules = {};
+                    ng.forEach($scope.node.layout, function(val, key){
+                        var stringVal = ''+val+layoutUnits[key];
+                        styleRules[key] = stringVal;
+                    });
+                    if (parseInt(styleRules['zIndex']) < 0)
+                    {
+                        styleRules.zIndex = '0';
+                    }
+                    $elem.css(styleRules);
+                }
+
+                function isSelected(){
+                    _.contains($scope.selectedNodes, $scope.node.id);
+                }
+
+                function updatePresentation(){
                     var styleRules = {
                         border:'1px solid #666',
                         backgroundColor:'#fafafa',
                         position:'absolute'
                     };
-                    ng.forEach($scope.node.layout, function(val, key){
-                        var stringVal = ''+val+layoutUnits[key];
-                        styleRules[key] = stringVal;
-                    });
+                    if (isSelected())
+                    {
+                        styleRules.backgroundColor='#b1fga3';
+                    }
                     $elem.css(styleRules);
                 }
 
+                function updateStyle(){
+                    updateLayout();
+                    updatePresentation();
+                }
+
                 $scope.$watch('node.layout', updateStyle, true);
+
+                function updateSelection(){
+                    updatePresentation();
+                }
+
+                $scope.$watch('selectedNodes', updateSelection, true);
 
                 //Finally execute the style updating functions at least once.
                 updateStyle();

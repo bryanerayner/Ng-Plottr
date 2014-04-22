@@ -78,9 +78,12 @@ _.extend(EventsObject.prototype, {
             if (currentEventMap.handles(name)) {
                 currentEventMap.handleEvent.apply(currentEventMap, newArgs );
                 // Apply any changes that were made to $scope. This prevents a need to call this from within each tool.
-                this.$scope.$apply();
             }
         }
+        _.defer(function(ctx){
+            ctx.$scope.$apply();
+        }, this);
+
 
     },
 

@@ -46,14 +46,20 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                         'toolSelected': function () {
                             this.createdNodeID = null;
                         },
-                        'mousedown': function (jQEvent) {
 
-                            var boundingClientRect = $scope.currentContext.currentContextDesignPanel.getBoundingClientRect();
+                        'mousedown': function (event, jQEvent) {
 
+                            var boundingClientRect = this.getDesignPanelBoundingClientRect();
 
-                            var newScreenX = boundingClientRect.top;
-                            var newScreenY = boundingClientRect.left;
+                            // Normalize ScreenX & ScreenY to take into account the design panel.
+                            var mousePos = this.normalizeMousePosition(jQEvent);
 
+                            var newPageX = mousePos.pageX;
+                            var newPageY = mousePos.pageY;
+
+                            if (newPageX > boundingClientRect.width || newPageY > boundingClientRect.height){
+                                return; // This is not in bounds of the current design scope. Return.
+                            }
                             // Make a unique id.
                             var newID = 0;
 
@@ -65,8 +71,12 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                                 newID++;
                             }
 
-                            this.currentContext.designNodes.push(generateDesignNode(newID, newScreenX, newScreenY));
+                            this.currentContext.designNodes.push(generateDesignNode(newID,
+                                newPageX,
+                                newPageY));
                             this.createdNodeID = newID;
+                            this.handleMouseMove();
+                            event.stopPropagation();
                         },
                         'mouseup': function () {
                             this.createdNodeID = null;
@@ -81,26 +91,34 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                             }
                         },
                         'mousemove': function (event, jQEvent) {
-                            var newScreenX = jQEvent.screenX;
-                            var newScreenY = jQEvent.screenY;
 
-                            this.screenXDelta = newScreenX - this.prevScreenX;
-                            this.screenYDelta = newScreenY - this.prevScreenY;
+                            var mousePos = this.normalizeMousePosition(jQEvent);
+
+                            var newPageX = mousePos.pageX;
+                            var newPageY = mousePos.pageY;
+
+                            this.pageX = newPageX;
+                            this.pageY= newPageY;
+
+                            this.pageXDelta = newPageX - this.prevPageX;
+                            this.pageYDelta = newPageY - this.prevPageY;
 
                             this.handleMouseMove();
 
-                            this.prevScreenX = newScreenX;
-                            this.prevScreenY = newScreenY;
+                            this.prevPageX = newPageX;
+                            this.prevPageY = newPageY;
                         }
                     })
                 ]
             };
         },
 
-        prevScreenX:0,
-        prevScreenY:0,
-        screenXDelta:0,
-        screenYDelta:0,
+        prevPageX:0,
+        prevPageY:0,
+        pageXDelta:0,
+        pageYDelta:0,
+        pageX:0,
+        pageY:0,
 
         handleMouseMove:function()
         {
@@ -109,11 +127,26 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                 var designNodes = _.where(this.currentContext.designNodes, {id:this.createdNodeID});
                 if (designNodes.length)
                 {
-                    designNodes[0].layout.width += this.screenXDelta;
-                    designNodes[0].layout.height += this.screenYDelta;
+                    designNodes[0].layout.width = this.pageX - designNodes[0].layout.left;
+                    designNodes[0].layout.height = this.pageY - designNodes[0].layout.top;
                 }
             }
             this.$scope.$apply();
+        },
+
+        getDesignPanelBoundingClientRect:function(){
+            return this.$scope.currentContext.getDesignPanel().getBoundingClientRect();
+        },
+
+        normalizeMousePosition:function(jQEvent){
+            var mousePos = {};
+            var boundingClientRect = this.getDesignPanelBoundingClientRect();
+            if (boundingClientRect)
+            {
+                mousePos.pageX = jQEvent.pageX - boundingClientRect.left;
+                mousePos.pageY= jQEvent.pageY - boundingClientRect.top;
+            }
+            return mousePos;
         }
 
     });

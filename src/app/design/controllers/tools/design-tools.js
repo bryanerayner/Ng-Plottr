@@ -1,6 +1,6 @@
 define(['angular', './module', 'lodash', 'jrClass', './tool',
-    './tool-creation',
-    './tool-selection'
+    './tool-selection',
+    './tool-creation'
 ], function (ng, module, _, Class, Tool) {
 
     // Figure out all loaded tools:
@@ -61,6 +61,7 @@ define(['angular', './module', 'lodash', 'jrClass', './tool',
                     _.each(eventsHash, function(toolname, key){
                         newEventsHash[key] = selectToolCallback(toolname);
                     });
+                    this.selectTool(eventsHash[0]);
 
                     newEventsHash['keydown:esc'] = this.selectLastTool;
 

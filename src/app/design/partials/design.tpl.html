@@ -7,10 +7,10 @@
 
     </section>
 
-    <section class = "currentContext design" id = "currentContextDesignPanel" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative;">
+    <section class = "currentContext design user-select-none" id = "currentContextDesignPanel" style = "width:{{currentContext.width}}px; height:{{currentContext.height}}px; position: relative; border:1px solid #000000;" ng-mousedown="ui.events.mousedown($event, 'designPanel')">
 
         <div ng-repeat = "node in currentContext.designNodes">
-            <design-node plot="currentContext.plot" node = "node" event-listener="ui.events.triggerUIEvent(eventName, event, node)"></design-node>
+            <design-node plot="currentContext.plot" selectedNodes = "currentContext.selectedNodes" node = "node" event-listener="ui.events.triggerUIEvent(eventName, event, node)"></design-node>
         </div>
     </section>
 
