@@ -1,8 +1,8 @@
 *.sw*
 *~
-build/
+
 bin/
 node_modules/
-vendor/
+
 .idea/
 npm-debug.log

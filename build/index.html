@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html ng-controller="AppCtrl" >
+<head>
+    <title ng-bind="pageTitle"></title>
+
+    <!-- social media tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@alivebox">
+    <meta name="twitter:title" content="aeks">
+    <meta name="twitter:description" content="AngularJS+RequireJS Made Easy: Base project to kickstart your Enterprise AngularJS projects. Based on ng-boilerplate, require-js as one of key components, intelligent build system and best recommended web and angular libraries.">
+    <meta name="twitter:creator" content="@alivebox">
+    <meta property="og:title" content="aeks" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://www.alivebox.com/projects/aeks/" />
+    <meta property="og:description" content="AngularJS+RequireJS Made Easy: Base project to kickstart your Enterprise AngularJS projects. Based on ng-boilerplate, require-js as one of key components, intelligent build system and best recommended web and angular libraries.">
+
+    <!-- font awesome from BootstrapCDN -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    
+    <!-- compiled CSS -->
+    <link rel="stylesheet" type="text/css" href="assets/Plottr-0.0.2.css" />
+
+    <!-- it's stupid to have to load it here, but this is for the +1 button 
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+        { "parsetags": "explicit" }
+    </script>
+    -->
+
+</head>
+<body>
+
+
+
+
+
+<!-- Main Content - START -->
+<div class="container" ui-view="main">
+</div>
+<!-- Main Content - END   -->
+
+
+
+
+<script src="vendor/requirejs/require.js" data-main="src/app/requirejs_config.js"></script>
+
+</body>
+</html>

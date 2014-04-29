@@ -1,0 +1,3 @@
+define([
+    './design-ctrl'
+], function () {});
