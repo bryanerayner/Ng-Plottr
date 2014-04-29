@@ -6,14 +6,12 @@ define([
     'angularUIUtils',
     'plusOne',
     './home/index',
-    './design/index',
-    './about/index'
-], function (ng) {
+    './design/index'
+    ], function (ng) {
     'use strict';
 
     var module = ng.module('app', [
         'app.home',
-        'app.about',
         'app.design',
         'restangular',
         'ui.router'
