@@ -23,6 +23,7 @@
 
 
         <section class = "col-xs-3">
+            <h4>Design Elements:</h4>
             <ul ng-repeat = "node in currentContext.designNodes">
                 <li class = "row" ng-click = "ui.tools.selectTool('selection');ui.selection.toggleSelection(node.id)">
                     <span ng-class = "{'col-xs-12':true, 'bg-success':ui.selection.nodeIsSelected(node.id)}">{{node.id}}</span>

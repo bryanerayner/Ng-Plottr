@@ -55,13 +55,26 @@ define(['angular', 'lodash', './tool', '../../services/classes/EventMap'], funct
                         this.prevPageX = newPageX;
                         this.prevPageY = newPageY;
                     },
-                    'ctrl+]':function()
+                    '}':function()
+                    {
+                        this.eachSelectedNode(function(node){
+                            node.layout.zIndex++;
+                        });
+                    },
+                    ']':function()
                     {
                         this.eachSelectedNode(function(node){
                            node.layout.zIndex++;
                         });
                     },
-                    'ctrl+[':function()
+                    '[':function()
+                    {
+                        this.eachSelectedNode(function(node){
+                            node.layout.zIndex--;
+                            if (node.zIndex < 0) {node.zIndex = 0;}
+                        });
+                    },
+                    '{':function()
                     {
                         this.eachSelectedNode(function(node){
                             node.layout.zIndex--;

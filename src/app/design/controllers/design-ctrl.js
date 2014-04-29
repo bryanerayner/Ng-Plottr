@@ -9,7 +9,6 @@ define(['angular', './module', 'lodash', 'jrClass'], function (ng, module, _, Cl
         var currentDesign = $stateParams.designId;
 
 
-
         $scope.data = {};
         $scope.io = {};
         var CurrentContext = Class.extend({
