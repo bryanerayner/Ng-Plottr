@@ -22,7 +22,7 @@ define([
 
         function ( $stateProvider, $urlRouterProvider , RestangularProvider) {
         $urlRouterProvider.otherwise( '/home' );
-            RestangularProvider.setBaseUrl('/api/v1');
+            RestangularProvider.setBaseUrl('../api/v1');
             RestangularProvider.setRequestSuffix('.json');
 
         }]);
