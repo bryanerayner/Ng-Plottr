@@ -99,7 +99,8 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
         };
 
         // Set up the environemtn for mac.
-        if (environment == 'mac'){
+        if (environment == 'mac')
+        {
             _.extend(EXT_MAPPING, {
                 'super_left':'ctrl',
                 'super_right':'select',
@@ -233,6 +234,11 @@ define(['angular', 'mousetrap', 'lodash'], function (ng, mousetrap, _ ) {
             }, function(list){return list.join("+");}),
 
             handleKeyEvent:function(event){
+                if (!KEY_CODES[event.keyCode])
+                {
+                    updateKeyCodes(event.keyCode);
+                }
+
                 // Check all the pressed keys to detect changes.
                 var changes = _.compact(_.map(this._pressedKeys, function(value, key){
                     if (this._previousKeys[key] != this._pressedKeys[key])

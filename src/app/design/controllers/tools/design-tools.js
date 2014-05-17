@@ -125,8 +125,6 @@ define(['angular', './module', 'lodash', 'jrClass', './tool',
 
                         this.calculateSelectedTool();
 
-                        this.$scope.$apply();
-
                         this.$scope.$emit('toolSelected', toolname);
                         this.$scope.$emit('toolSelected'+':'+toolname);
                     }
